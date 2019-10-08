@@ -1,11 +1,3 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow
- */
-
 import React from 'react';
 import {
   SafeAreaView,
@@ -24,7 +16,7 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
-const App: () => React$Node = () => {
+export default App = () => {
   return (
     <>
       <StatusBar barStyle="dark-content" />
@@ -111,4 +103,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default App;
+
