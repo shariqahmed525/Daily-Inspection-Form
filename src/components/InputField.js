@@ -6,19 +6,21 @@ import { GreenColor } from '../constants/colors';
 export default InputField = props => {
   return (
     <TextField
+      {...props}
       textColor="#000"
-      tintColor={GreenColor}
       value={props.value}
       label={props.label}
       error={props.error}
+      tintColor={GreenColor}
       onChangeText={props.onChangeText}
       containerStyle={styles.inputContainer}
+      labelHeight={15}
     />
   )
 }
 
 const styles = StyleSheet.create({
-  inputContainer: {
+  containerStyle: {
     width: '100%',
   },
 })
