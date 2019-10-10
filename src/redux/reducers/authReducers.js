@@ -6,10 +6,10 @@ export default (state = INITIAL_STATE, action) => {
       return { ...state, loading: true };
     case "STOP_LOADING":
       return { ...state, loading: false };
-    case "USER_UID":
-      return { ...state, id: action.id }
-    case "USER_DATA":
-      return { ...state, userData: action.userData }
+    case "UID":
+      return { ...state, uid: action.uid }
+    case "USER":
+      return { ...state, user: action.user }
     default:
       return state;
   }

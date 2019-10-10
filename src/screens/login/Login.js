@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   View,
   Text,
@@ -7,88 +7,170 @@ import {
   ScrollView,
   StyleSheet,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native'
+import { useNavigation } from 'react-navigation-hooks';
 
 import Button from '../../components/Button';
-import { GreenColor } from '../../constants/colors';
+import store from '../../redux/store/store';
+
+import { GreenColor, RedColor } from '../../constants/colors';
+import { validateEmail } from '../../constants/functions';
+import { FIREBASE_AUTH, FIRESTORE } from '../../constants/constant';
+import { uid, user } from '../../redux/actions/actions';
 
 const Input = props => (
-  <View style={styles.inputWrapper}>
-    <View style={styles.inputIconWrapper}>
-      <Image
-        style={styles.inputIcon}
-        source={props.inputIcon}
-      />
-    </View>
-    <TextInput
-      {...props}
-      style={{ ...styles.input }}
-      placeholderTextColor="#aaa"
-    />
-    {props.textContentType === "password" && (
-      <TouchableOpacity
-        activeOpacity={.8}
-        onPress={props.onShowPasswordPress}
-        style={styles.rightIconWrapper}
-      >
+  <>
+    <View style={styles.inputWrapper}>
+      <View style={styles.inputIconWrapper}>
         <Image
-          style={styles.rightIcon}
-          source={props.rightIcon}
+          style={styles.inputIcon}
+          source={props.inputIcon}
         />
-      </TouchableOpacity>
-    )}
-  </View>
+      </View>
+      <TextInput
+        {...props}
+        style={{ ...styles.input }}
+        placeholderTextColor="#aaa"
+      />
+      {props.textContentType === "password" && (
+        <TouchableOpacity
+          activeOpacity={.8}
+          onPress={props.onShowPasswordPress}
+          style={styles.rightIconWrapper}
+        >
+          <Image
+            style={styles.rightIcon}
+            source={props.rightIcon}
+          />
+        </TouchableOpacity>
+      )}
+    </View>
+    {props.error !== "" && <Text style={styles.error}>{props.error}</Text>}
+  </>
 )
 
-export default Login = props => {
+export default Login = () => {
+  const { navigate } = useNavigation();
 
   const [email, setEmail] = useState("");
+  const [emailError, setEmailError] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const [showPassword, setShowPassword] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [loader, setLoader] = useState(false);
+
+  const validate = () => {
+    if (!validateEmail(email)) {
+      setEmailError("Enter a valid email address");
+    }
+    if (password.trim().length < 5) {
+      setPasswordError("Password should be minimum 6 characters");
+    }
+    else {
+      setLoader(true);
+      signin();
+    }
+  }
+
+  const signin = async () => {
+    try {
+      const { user } = await FIREBASE_AUTH.signInWithEmailAndPassword(email, password);
+      await FIRESTORE.collection('users').doc(user.uid).set({
+        email,
+        password,
+      })
+      setLoader(false);
+    }
+    catch (err) {
+      if (err.code === "auth/user-not-found") {
+        setPasswordError(`There is no user found who use this email`);
+      }
+      if (err.code === "auth/wrong-password") {
+        setPasswordError(err.message);
+      }
+      console.log(err, ' error in signin')
+      setLoader(false);
+    }
+  }
+
+  useEffect(() => {
+    checkSession();
+  }, [])
+
+  const checkSession = () => {
+    FIREBASE_AUTH.onAuthStateChanged(auth => {
+      if (auth) {
+        store.dispatch(uid(auth.uid));
+        store.dispatch(user({
+          email: auth.email,
+        }));
+        navigate('Home');
+      } else {
+        setIsLoading(true);
+      }
+    })
+  }
 
   return (
-    <ScrollView
-      keyboardShouldPersistTaps="handled"
-      contentContainerStyle={styles.container}
-    >
-      <Image
-        style={styles.logo}
-        resizeMode="contain"
-        source={{ uri: "https://banner2.kisspng.com/20181128/baf/kisspng-logo-product-inspection-brand-trademark-5bfe7e51ed3301.3615299315434051379716.jpg" }}
-      />
-      <Input
-        value={email}
-        placeholder="Email"
-        textContentType="emailAddress"
-        onChangeText={(e) => setEmail(e)}
-        inputIcon={require('../../assets/login/email.png')}
-      />
-      <Input
-        value={password}
-        placeholder="Password"
-        textContentType="password"
-        secureTextEntry={showPassword}
-        onChangeText={(e) => setPassword(e)}
-        onShowPasswordPress={() => setShowPassword(!showPassword)}
-        inputIcon={require('../../assets/login/locked.png')}
-        rightIcon={
-          showPassword ?
-            require('../../assets/login/eye.png') :
-            require('../../assets/login/visibility.png')
-        }
-      />
-      <TouchableOpacity
-        activeOpacity={.8}
-        style={styles.forgotPasswordWrapper}
+    isLoading && (
+      <ScrollView
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={styles.container}
       >
-        <Text style={styles.forgotPassword}>Forgot Password?</Text>
-      </TouchableOpacity>
+        <Image
+          style={styles.logo}
+          resizeMode="contain"
+          source={require('../../assets/logo.png')}
+        />
+        <Input
+          value={email}
+          error={emailError}
+          placeholder="Email"
+          textContentType="emailAddress"
+          onChangeText={(e) => {
+            setEmail(e);
+            setEmailError("");
+          }}
+          inputIcon={require('../../assets/login/email.png')}
+        />
+        <Input
+          value={password}
+          error={passwordError}
+          placeholder="Password"
+          textContentType="password"
+          secureTextEntry={showPassword}
+          onChangeText={(e) => {
+            setPassword(e);
+            setPasswordError("");
+          }}
+          onShowPasswordPress={() => setShowPassword(!showPassword)}
+          inputIcon={require('../../assets/login/locked.png')}
+          rightIcon={
+            showPassword ?
+              require('../../assets/login/eye.png') :
+              require('../../assets/login/visibility.png')
+          }
+        />
+        <TouchableOpacity
+          activeOpacity={.8}
+          style={styles.forgotPasswordWrapper}
+        >
+          <Text style={styles.forgotPassword}>Forgot Password?</Text>
+        </TouchableOpacity>
 
-      <Button
-        text="Login"
-        onPress={() => props.navigation.navigate('MainScreen')}
-      />
-    </ScrollView>
+        {loader ?
+          <View>
+            <ActivityIndicator size="large" color={GreenColor} />
+          </View>
+          :
+          <Button
+            text="Login"
+            onPress={validate}
+          />}
+      </ScrollView>
+    )
   )
 }
 
@@ -100,14 +182,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: '6%',
   },
   logo: {
-    width: 100,
-    height: 100,
+    width: 150,
+    height: 150,
     marginBottom: 50,
   },
   inputWrapper: {
     width: '100%',
+    marginTop: 15,
     borderRadius: 3,
-    marginBottom: 15,
     paddingVertical: 7,
     alignItems: 'center',
     flexDirection: 'row',
@@ -132,6 +214,7 @@ const styles = StyleSheet.create({
   forgotPasswordWrapper: {
     alignSelf: 'flex-end',
     marginBottom: 30,
+    marginTop: 10,
   },
   forgotPassword: {
     textAlign: 'right',
@@ -143,5 +226,12 @@ const styles = StyleSheet.create({
   rightIcon: {
     width: 22,
     height: 22,
-  }
+  },
+  error: {
+    fontSize: 13,
+    marginTop: 10,
+    color: RedColor,
+    alignSelf: 'flex-start',
+    textAlign: 'left',
+  },
 })

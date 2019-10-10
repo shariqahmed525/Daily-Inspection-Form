@@ -1,28 +1,11 @@
 import React from 'react'
 import {
   View,
-  Text,
-  Image,
   StyleSheet,
-  TouchableNativeFeedback
 } from 'react-native'
+import Box from '../../components/Box';
 import { useNavigation } from 'react-navigation-hooks';
 import { shadow, GreyColor } from '../../constants/colors';
-
-const Box = props => (
-  <TouchableNativeFeedback
-    onPress={props.onPress}
-    background={TouchableNativeFeedback.SelectableBackground()}
-  >
-    <View style={props.style}>
-      <Image
-        style={props.imageStyle}
-        source={props.image}
-      />
-      <Text style={styles.text}>{props.text}</Text>
-    </View>
-  </TouchableNativeFeedback>
-)
 
 export default Home = () => {
   const { navigate } = useNavigation();
@@ -100,9 +83,6 @@ const styles = StyleSheet.create({
     width: 70,
     height: 70,
     marginBottom: 15,
-  },
-  text: {
-    fontSize: 16,
   },
   mainImage: {
     height: 100,
