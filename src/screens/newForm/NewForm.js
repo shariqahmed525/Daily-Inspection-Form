@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   Text,
   View,
@@ -7,6 +7,7 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  ActivityIndicator,
   KeyboardAvoidingView,
 } from 'react-native'
 import _ from 'lodash';
@@ -23,7 +24,7 @@ import {
 } from '../../constants/constant';
 import InputField from '../../components/InputField';
 import CheckBox from '../../components/CheckBox';
-import { GreenColor, RedColor } from '../../constants/colors';
+import { GreenColor, RedColor, GreyColor } from '../../constants/colors';
 import RadioButtons from '../../components/RadioButtons';
 
 const FieldsHeading = props => (
@@ -33,6 +34,8 @@ const FieldsHeading = props => (
 )
 
 export default NewForm = props => {
+
+  const [isLoading, setIsLoading] = useState(false)
 
   /* First Section */
   const [inspectorName, setInspectorName] = useState("");
@@ -76,6 +79,10 @@ export default NewForm = props => {
   const [datePickerModal, setDatePickerModal] = useState(false);
   const [date, setDate] = useState("");
   const [dateError, setDateError] = useState("");
+
+  useEffect(() => {
+    setIsLoading(true)
+  }, [])
 
   /* Handlers */
 
@@ -198,6 +205,9 @@ export default NewForm = props => {
     }
     if (!reference) {
       setReferenceError("Please enter reference")
+    }
+    else {
+      alert("OK");
     }
   }
 
@@ -428,11 +438,13 @@ export default NewForm = props => {
         </TouchableOpacity>
         {date !== "" && <Text style={styles.date}>{date}</Text>}
         {dateError !== "" && <Text style={styles.error}>{dateError}</Text>}
+
         <DatePicker
           isVisible={datePickerModal}
           onConfirm={(date) => handleDatePicker(date)}
           onCancel={() => setDatePickerModal(false)}
         />
+
         <InputField
           value={reference}
           label='Reference *'
@@ -458,24 +470,30 @@ export default NewForm = props => {
   }
 
   return (
-    <KeyboardAvoidingView
-      style={styles.keyboardAvoidingView}
-      behavior={Platform.OS === "ios" ? "padding" : null}
-    >
-      <ScrollView
-        keyboardShouldPersistTaps="handled"
-        contentContainerStyle={styles.container}
+    isLoading ? (
+      <KeyboardAvoidingView
+        style={styles.keyboardAvoidingView}
+        behavior={Platform.OS === "ios" ? "padding" : null}
       >
-        <View>
-          {_renderFirstSectionFields()}
-          {_renderSecondSectionFields()}
-          {_renderThirdSectionFields()}
-          {_renderFourthSectionFields()}
-          {_renderFifthSectionFields()}
-          {_renderBottomButton()}
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+        <ScrollView
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={styles.container}
+        >
+          <View>
+            {_renderFirstSectionFields()}
+            {_renderSecondSectionFields()}
+            {_renderThirdSectionFields()}
+            {_renderFourthSectionFields()}
+            {_renderFifthSectionFields()}
+            {_renderBottomButton()}
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    )
+      :
+      <View style={styles.loader}>
+        <ActivityIndicator size="large" color={GreenColor} />
+      </View>
   )
 }
 
@@ -485,7 +503,7 @@ const styles = StyleSheet.create({
     paddingTop: '2%',
     paddingBottom: '6%',
     paddingHorizontal: '6%',
-    backgroundColor: "#f5f5f5",
+    backgroundColor: GreyColor,
   },
   lable: {
     marginVertical: 10,
@@ -562,5 +580,11 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontSize: 16,
     marginBottom: 10,
-  }
+  },
+  loader: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: GreyColor,
+  },
 })

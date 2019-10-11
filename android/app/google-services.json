@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "566949544267",
+    "firebase_url": "https://inspectionform-364ca.firebaseio.com",
+    "project_id": "inspectionform-364ca",
+    "storage_bucket": "inspectionform-364ca.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:566949544267:android:b203f9ee58801cf0bde8ce",
+        "android_client_info": {
+          "package_name": "com.dailyinspectionform"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "566949544267-im7ctf78hfnhagf9sg37dm7d9aii4hoi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCYuZ89x0_fMWdpGvajlSC3IT1YQaaFdU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "566949544267-im7ctf78hfnhagf9sg37dm7d9aii4hoi.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
