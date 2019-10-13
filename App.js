@@ -9,6 +9,7 @@ import { Provider } from 'react-redux';
 
 import store from './src/redux/store/store';
 import AppContainer from './src/Navigation';
+import { OfficialColor } from './src/constants/colors';
 
 export default App = () => {
 
@@ -17,7 +18,7 @@ export default App = () => {
     <Provider store={store}>
       <View style={styles.container}>
         <SafeAreaView style={styles.container}>
-          <StatusBar hidden={false} backgroundColor={"#f5f5f5"} barStyle={"dark-content"} />
+          <StatusBar hidden={false} backgroundColor={OfficialColor} barStyle={"dark-content"} />
           <AppContainer />
         </SafeAreaView>
       </View>
@@ -29,7 +30,7 @@ export default App = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f5f5"
+    backgroundColor: OfficialColor
   },
 });
 

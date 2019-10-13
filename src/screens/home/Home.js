@@ -5,10 +5,14 @@ import {
 } from 'react-native'
 import Box from '../../components/Box';
 import { useNavigation } from 'react-navigation-hooks';
-import { shadow, GreyColor } from '../../constants/colors';
+import { shadow, GreyColor, OfficialColor } from '../../constants/colors';
+import { FIREBASE_AUTH } from '../../constants/constant';
 
 export default Home = () => {
   const { navigate } = useNavigation();
+
+  const logout = () => FIREBASE_AUTH.signOut().then(() => navigate('Login'))
+
   return (
     <View style={styles.container}>
       <Box
@@ -16,22 +20,22 @@ export default Home = () => {
         imageStyle={styles.mainImage}
         onPress={() => navigate('NewForm')}
         style={styles.firstContainer}
-        image={require('../../assets/home/add-file.png')}
+        image={require('../../assets/home/new-form.png')}
       />
       <View style={styles.secondContainer}>
         <Box
           text="ALL FORMS"
           imageStyle={styles.image}
-          onPress={() => navigate('')}
+          onPress={() => navigate('AllForms')}
           style={styles.firstSubContainer}
-          image={require('../../assets/home/file.png')}
+          image={require('../../assets/home/all-forms.png')}
         />
         <Box
           text="LOG OUT"
           imageStyle={styles.image}
-          onPress={() => navigate('Login')}
+          onPress={logout}
           style={styles.secondSubContainer}
-          image={require('../../assets/home/exit.png')}
+          image={require('../../assets/home/logout.png')}
         />
       </View>
     </View>
@@ -51,7 +55,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 7,
     ...shadow,
-    backgroundColor: "#fff",
+    backgroundColor: OfficialColor,
     marginBottom: 15
   },
   secondContainer: {
@@ -65,7 +69,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 15,
-    backgroundColor: '#fff',
+    backgroundColor: OfficialColor,
     height: '100%',
     borderRadius: 7,
     ...shadow,
@@ -74,7 +78,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: OfficialColor,
     borderRadius: 7,
     height: '100%',
     ...shadow,

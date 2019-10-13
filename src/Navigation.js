@@ -5,6 +5,8 @@ import { createStackNavigator } from 'react-navigation-stack';
 import Login from './screens/login/Login';
 import Home from './screens/home/Home';
 import NewForm from './screens/newForm/NewForm';
+import AllForms from './screens/allForms/AllForms';
+import { OfficialColor } from './constants/colors';
 
 const Stack = createStackNavigator({
   Home: {
@@ -19,8 +21,26 @@ const Stack = createStackNavigator({
           justifyContent: 'center',
         },
         headerStyle: {
-          backgroundColor: "#f5f5f5",
+          backgroundColor: OfficialColor,
         },
+      }
+    }
+  },
+  AllForms: {
+    screen: AllForms,
+    navigationOptions: () => {
+      return {
+        headerTitle: "All Forms",
+        headerTitleStyle: {
+          textAlign: 'center',
+        },
+        headerTitleContainerStyle: {
+          justifyContent: 'center',
+        },
+        headerStyle: {
+          backgroundColor: OfficialColor,
+        },
+        headerRight: <></>
       }
     }
   },
@@ -36,12 +56,14 @@ const Stack = createStackNavigator({
           justifyContent: 'center',
         },
         headerStyle: {
-          backgroundColor: "#f5f5f5",
+          backgroundColor: OfficialColor,
         },
         headerRight: <></>
       }
     }
   },
+}, {
+  initialRouteName: "Home"
 });
 
 const MainStack = createSwitchNavigator({

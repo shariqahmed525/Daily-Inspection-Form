@@ -10,6 +10,8 @@ export default (state = INITIAL_STATE, action) => {
       return { ...state, uid: action.uid }
     case "USER":
       return { ...state, user: action.user }
+    case "ALL_FORMS":
+      return { ...state, allForms: action.allForms }
     default:
       return state;
   }

@@ -10,14 +10,15 @@ import {
   ActivityIndicator,
 } from 'react-native'
 import { useNavigation } from 'react-navigation-hooks';
+import SplashScreen from 'react-native-splash-screen'
 
 import Button from '../../components/Button';
 import store from '../../redux/store/store';
 
-import { GreenColor, RedColor } from '../../constants/colors';
+import { GreenColor, RedColor, OfficialColor } from '../../constants/colors';
 import { validateEmail } from '../../constants/functions';
 import { FIREBASE_AUTH, FIRESTORE } from '../../constants/constant';
-import { uid, user } from '../../redux/actions/actions';
+import { uid, user, getAllForms } from '../../redux/actions/actions';
 
 const Input = props => (
   <>
@@ -97,6 +98,7 @@ export default Login = () => {
 
   useEffect(() => {
     checkSession();
+    SplashScreen.hide();
   }, [])
 
   const checkSession = () => {
@@ -106,6 +108,7 @@ export default Login = () => {
         store.dispatch(user({
           email: auth.email,
         }));
+        store.dispatch(getAllForms(auth.uid));
         navigate('Home');
       } else {
         setIsLoading(true);
@@ -180,6 +183,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: '6%',
+    backgroundColor: OfficialColor,
   },
   logo: {
     width: 150,

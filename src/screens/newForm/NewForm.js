@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import {
   Text,
   View,
@@ -10,22 +10,34 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
 } from 'react-native'
+import { useNavigation } from 'react-navigation-hooks';
 import _ from 'lodash';
+import uuid from 'uuid';
+import firebase from 'react-native-firebase';
 import ImagePicker from 'react-native-image-picker';
 import DatePicker from "react-native-modal-datetime-picker";
 
 import Button from '../../components/Button';
+import CheckBox from '../../components/CheckBox';
+import InputField from '../../components/InputField';
+import RadioButtons from '../../components/RadioButtons';
+
 import {
   CLEANING_TYPES,
   INSPECTION_TYPES,
   DEFECT_FOUND_DURING_INSPECTIONS,
   OPERATIONS_AFFECTED,
-  CATEGORIES
+  CATEGORIES,
+  FIRESTORE,
+  FIREBASE_STORAGE
 } from '../../constants/constant';
-import InputField from '../../components/InputField';
-import CheckBox from '../../components/CheckBox';
-import { GreenColor, RedColor, GreyColor } from '../../constants/colors';
-import RadioButtons from '../../components/RadioButtons';
+import {
+  RedColor,
+  GreyColor,
+  GreenColor,
+  OfficialColor,
+} from '../../constants/colors';
+import store from '../../redux/store/store';
 
 const FieldsHeading = props => (
   <View style={styles.fieldHeadingWrapper}>
@@ -33,9 +45,13 @@ const FieldsHeading = props => (
   </View>
 )
 
-export default NewForm = props => {
+export default NewForm = () => {
+  const { navigate } = useNavigation();
 
-  const [isLoading, setIsLoading] = useState(false)
+  let scrollRef = useRef(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [loader, setLoader] = useState(false);
+  const [uid, setUid] = useState("")
 
   /* First Section */
   const [inspectorName, setInspectorName] = useState("");
@@ -57,7 +73,6 @@ export default NewForm = props => {
 
   /* Third Section */
   const [comments, setComments] = useState("");
-  const [photo, setPhoto] = useState(null);
   const [photoError, setPhotoError] = useState("");
   const [selectedPhoto, setSelectedPhoto] = useState("");
 
@@ -81,7 +96,9 @@ export default NewForm = props => {
   const [dateError, setDateError] = useState("");
 
   useEffect(() => {
-    setIsLoading(true)
+    setIsLoading(true);
+    const { authReducers } = store.getState();
+    setUid(authReducers.uid);
   }, [])
 
   /* Handlers */
@@ -127,12 +144,10 @@ export default NewForm = props => {
         console.log('ImagePicker Error: ', response.error);
       } else if (response.customButton) {
         setPhotoError("");
-        setPhoto(null);
         setSelectedPhoto("");
       } else {
         const source = response.uri;
         setPhotoError("");
-        setPhoto(response);
         setSelectedPhoto(source);
       }
     });
@@ -157,57 +172,183 @@ export default NewForm = props => {
 
   const handleDatePicker = date => {
     setDateError("");
-    setDate(`${date.getDate()}/${date.getMonth() + 1}/${date.getYear()}`)
+    setDate(`${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`)
   }
+
+  const scrollUp = y => scrollRef.scrollTo({ x: 0, y: y, animated: true })
 
   const validateForm = () => {
     if (!siteInspected) {
       setSiteInspectedError("Please enter site inspected");
+      scrollUp(0);
+      return;
     }
     if (!unit) {
       setUnitError("Please enter unit");
+      scrollUp(0);
+      return;
     }
     if (!inspectorName) {
       setInspectorNameError("Please enter inspector name");
+      scrollUp(0);
+      return;
     }
     if (checkedInspection.length < 1) {
       setCheckedInspectionError("Please select atleast one type from given inspection types")
+      scrollUp(170);
+      return;
     }
     if (checkedInspection.includes("Other") && checkedInspectionOther == "") {
       setCheckedInspectionOtherError("Please enter inspection whatever you want");
+      scrollUp(170);
+      return;
     }
     if (!descOfLocationInspected) {
       setDescOfLocationInspectedError("Please enter description of location inspected");
+      scrollUp(370);
+      return;
     }
     if (!cleanType) {
       setCleanTypeError("Please select anyone option from given cleaning types")
+      scrollUp(470);
+      return;
     }
     if (!selectedPhoto) {
       setPhotoError("Please capture or select photo");
+      scrollUp(670);
+      return;
     }
     if (!defectFound) {
       setDefectFoundError("Please select anyone option from given defect found during inspections")
+      scrollUp(670);
+      return;
     }
     if (!operationsAffected) {
       setOperationsAffectedError("Please select anyone option from given operations affected")
+      scrollUp(870);
+      return;
     }
     if (!category) {
       setCategoryError("Please select anyone option from given categories");
+      scrollUp(1070);
+      return;
     }
     if (category === "Other" && otherCategory === "") {
       setOtherCategoryError("Please enter category name");
+      scrollUp(1170);
+      return;
     }
     if (!defectDescription) {
       setDefectDescriptionError("Please enter description of defect")
+      return;
     }
     if (!date) {
       setDateError("Please select date")
+      return;
     }
     if (!reference) {
       setReferenceError("Please enter reference")
+      return;
     }
     else {
-      alert("OK");
+      setLoader(true);
+      uploadPhoto();
+    }
+  }
+
+  const submitDetails = async (photoUrl, photoName) => {
+    console.log(siteInspected, " siteInspected");
+    console.log(unit, " unit");
+    console.log(inspectorName, " inspectorName");
+    console.log(checkedInspection, " Inspection Types");
+    console.log(checkedInspectionOther, " Inspection Types Other");
+    console.log(descOfLocationInspected, " descOfLocationInspected");
+    console.log(cleanType, " cleanType");
+    console.log(comments, " comments");
+    console.log(photoUrl, " photoUrl");
+    console.log(photoName, " photoName");
+    console.log(defectFound, " defectFound");
+    console.log(operationsAffected, " operationsAffected");
+    console.log(category, " category");
+    console.log(otherCategory, " otherCategory");
+    console.log(defectDescription, " defectDescription");
+    console.log(date, " date");
+    console.log(reference, " reference");
+
+    const filterInspectionTypes = checkedInspection.includes("Other") ?
+      [...checkedInspection, checkedInspectionOther] :
+      checkedInspection;
+
+    const filterCategory = category === "Other" ? otherCategory : category;
+
+    try {
+      await FIRESTORE.collection('allforms').doc(uid).collection('form').add({
+        unit,
+        date,
+        comments,
+        photoUrl,
+        photoName,
+        cleanType,
+        reference,
+        defectFound,
+        inspectorName,
+        siteInspected,
+        defectDescription,
+        operationsAffected,
+        category: filterCategory,
+        time: new Date().toLocaleString(),
+        inspectionTypes: filterInspectionTypes,
+        locationInspectedDesc: descOfLocationInspected,
+        timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+
+      setLoader(false);
+      navigate('AllForms');
+
+      /* clean all fields */
+
+      setUnit("");
+      setDate("");
+      setCategory("");
+      setComments("");
+      setCleanType("");
+      setReference("");
+      setDefectFound("");
+      setSelectedPhoto("");
+      setOtherCategory("");
+      setInspectorName("");
+      setSiteInspected("");
+      setCheckedInspection([]);
+      setDefectDescription("");
+      setOperationsAffected("");
+      setCheckedInspectionOther("");
+      setCheckedInspectionOther("");
+      setDescOfLocationInspected("");
+    }
+    catch (err) {
+      setLoader(false);
+      console.log(err, " error in submit new form details")
+    }
+  }
+
+  const uploadPhoto = async () => {
+    setLoader(true)
+    const ext = selectedPhoto.split('.').pop(); // Extract image extension
+    const filename = `${uuid()}.${ext}`; // Generate unique name
+    const destinationPath = `form/images/${filename}`;
+    try {
+      await FIREBASE_STORAGE
+        .ref(destinationPath)
+        .putFile(selectedPhoto);
+      FIREBASE_STORAGE
+        .ref(destinationPath)
+        .getDownloadURL()
+        .then(url => {
+          submitDetails(url, filename);
+        })
+    }
+    catch (err) {
+      console.log("error in image upload");
     }
   }
 
@@ -462,8 +603,9 @@ export default NewForm = props => {
     return (
       <View style={styles.bottomButtonWrapper}>
         <Button
-          text="Add Details"
+          disabled={loader}
           onPress={validateForm}
+          text={loader ? "Submitting..." : "Submit Details"}
         />
       </View>
     )
@@ -476,6 +618,7 @@ export default NewForm = props => {
         behavior={Platform.OS === "ios" ? "padding" : null}
       >
         <ScrollView
+          ref={ref => scrollRef = ref}
           keyboardShouldPersistTaps="handled"
           contentContainerStyle={styles.container}
         >
@@ -492,7 +635,7 @@ export default NewForm = props => {
     )
       :
       <View style={styles.loader}>
-        <ActivityIndicator size="large" color={GreenColor} />
+        <ActivityIndicator size="large" color={OfficialColor} />
       </View>
   )
 }
@@ -587,4 +730,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: GreyColor,
   },
+  progressBar: {
+    backgroundColor: 'rgb(3, 154, 229)',
+    height: 3,
+    shadowColor: '#000',
+  }
 })

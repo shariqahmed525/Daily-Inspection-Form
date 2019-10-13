@@ -1,13 +1,17 @@
 import React from 'react'
-import { TouchableOpacity, Text, StyleSheet } from 'react-native'
+import { TouchableOpacity, Text, StyleSheet, View } from 'react-native'
 import { GreenColor } from '../constants/colors'
 
 export default Button = props => {
   return (
     <TouchableOpacity
+      {...props}
       activeOpacity={.8}
       onPress={props.onPress}
-      style={styles.button}
+      style={{
+        ...styles.button,
+        opacity: props.disabled ? .8 : 1,
+      }}
     >
       <Text style={styles.buttonText}>{props.text}</Text>
     </TouchableOpacity>
@@ -26,6 +30,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     textAlign: 'center',
+    zIndex: 10
   },
 })
 
