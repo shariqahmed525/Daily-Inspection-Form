@@ -9,11 +9,13 @@ import {
   ActivityIndicator,
   TouchableNativeFeedback
 } from 'react-native'
+import AwesomeAlert from '../../components/react-native-awesome-alerts';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import { useNavigation } from 'react-navigation-hooks';
 
 import store from '../../redux/store/store';
-import { OfficialColor, RedColor, GreyColor } from '../../constants/colors';
+import { OfficialColor, RedColor, GreyColor, BlackColor, WhiteColor } from '../../constants/colors';
+import { FIRESTORE } from '../../constants/constant';
 
 const { width } = Dimensions.get('window');
 
@@ -41,6 +43,9 @@ export default AllForms = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [uid, setUid] = useState("");
   const [allForms, setAllForms] = useState([]);
+  const [showAlert, setShowAlert] = useState(false);
+  const [deleteObject, setDeleteObject] = useState(null);
+  const [progress, setProgress] = useState(false);
 
   useEffect(() => {
     getStateFromStore();
@@ -54,8 +59,27 @@ export default AllForms = () => {
     setIsLoading(authReducers.loading);
   }
 
-  const deleteForm = (data) => {
-    console.log(data);
+  const confirmation = (data) => {
+    setShowAlert(true);
+    setDeleteObject(data);
+  }
+
+  const deleteForm = () => {
+    const { id } = deleteObject
+    setProgress(true)
+    FIRESTORE
+      .collection('allforms')
+      .doc(uid)
+      .collection('form')
+      .doc(id)
+      .delete()
+      .then(() => {
+        setShowAlert(false);
+        setProgress(false);
+      })
+      .catch(err => {
+        console.log(err, " error in delete form")
+      });
   }
 
   return (
@@ -66,53 +90,71 @@ export default AllForms = () => {
         </View>
         :
         (allForms !== undefined && allForms !== null) ? allForms.length > 0 ? (
-          <SwipeListView
-            stopLeftSwipe={width / 2}
-            stopRightSwipe={-(width / 2)}
-            data={allForms}
-            renderItem={(data) => {
-              return (
-                <TouchableNativeFeedback
-                  background={TouchableNativeFeedback.SelectableBackground()}
-                >
-                  <View style={styles.rowFront}>
-                    <Image
-                      style={styles.image}
-                      source={require('../../assets/home/all-forms.png')}
-                    />
-                    <View style={styles.listTextWrapper}>
-                      <Text style={styles.listText}>{data.item.siteInspected}</Text>
-                      <Text style={styles.listSubText}>{data.item.date}</Text>
+          <>
+            <SwipeListView
+              stopLeftSwipe={width / 2}
+              stopRightSwipe={-(width / 2)}
+              data={allForms}
+              renderItem={(data) => {
+                return (
+                  <TouchableNativeFeedback
+                    background={TouchableNativeFeedback.SelectableBackground()}
+                  >
+                    <View style={styles.rowFront}>
+                      <Image
+                        style={styles.image}
+                        source={require('../../assets/home/all-forms.png')}
+                      />
+                      <View style={styles.listTextWrapper}>
+                        <Text style={styles.listText}>{data.item.siteInspected}</Text>
+                        <Text style={styles.listSubText}>{data.item.date}</Text>
+                      </View>
                     </View>
-                  </View>
-                </TouchableNativeFeedback>
-              )
-            }}
-            renderHiddenItem={(data) => (
-              <View style={styles.rowBack}>
-                <ListButton
-                  style={styles.edit}
-                  onPress={() => navigate('EditForm', { selectedListItem: data.item })}
-                  icon={require('../../assets/file.png')}
-                />
-                <ListButton
-                  style={styles.delete}
-                  onPress={() => deleteForm(data.item)}
-                  icon={require('../../assets/garbage.png')}
-                />
-              </View>
-            )}
-            leftOpenValue={70}
-            rightOpenValue={-70}
-          />
+                  </TouchableNativeFeedback>
+                )
+              }}
+              renderHiddenItem={(data) => (
+                <View style={styles.rowBack}>
+                  <ListButton
+                    style={styles.edit}
+                    onPress={() => navigate('EditForm', { selectedListItem: data.item })}
+                    icon={require('../../assets/file.png')}
+                  />
+                  <ListButton
+                    style={styles.delete}
+                    onPress={() => confirmation(data.item)}
+                    icon={require('../../assets/garbage.png')}
+                  />
+                </View>
+              )}
+              leftOpenValue={70}
+              rightOpenValue={-70}
+            />
+            <AwesomeAlert
+              show={showAlert}
+              showProgress={progress}
+              title={!progress && "Confirmation"}
+              message={!progress && "Are you sure to delete this form?"}
+              closeOnTouchOutside={false}
+              closeOnHardwareBackPress={false}
+              showCancelButton={!progress && true}
+              showConfirmButton={!progress && true}
+              cancelText="No, cancel"
+              confirmText="Yes, delete it"
+              confirmButtonColor={RedColor}
+              cancelButtonColor={"#b6b6b6"}
+              onCancelPressed={() => setShowAlert(false)}
+              onConfirmPressed={deleteForm}
+            />
+          </>
         )
           :
           <View style={styles.loader}>
-            <Text>No forms created yet</Text>
+            <Text style={styles.notFormText}>No forms created yet</Text>
           </View>
           :
           <View style={styles.loader}>
-            <Text>No forms created yet</Text>
+            <Text style={styles.notFormText}>No forms created yet</Text>
           </View>
       }
     </View>
@@ -132,7 +174,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: '6%',
-    backgroundColor: '#fff',
+    backgroundColor: WhiteColor,
     borderBottomColor: "#c3c3c3",
   },
   loader: {
@@ -175,14 +217,18 @@ const styles = StyleSheet.create({
   },
   listText: {
     fontSize: 18,
-    color: '#000',
+    color: BlackColor,
   },
   listSubText: {
     fontSize: 12,
     marginTop: 2,
-    color: '#000',
+    color: BlackColor,
   },
   listTextWrapper: {
     marginLeft: 10,
+  },
+  notFormText: {
+    fontSize: 20,
+    color: BlackColor
   }
 })

@@ -15,7 +15,7 @@ import SplashScreen from 'react-native-splash-screen'
 import Button from '../../components/Button';
 import store from '../../redux/store/store';
 
-import { GreenColor, RedColor, OfficialColor } from '../../constants/colors';
+import { GreenColor, RedColor, OfficialColor, WhiteColor, GreyColor } from '../../constants/colors';
 import { validateEmail } from '../../constants/functions';
 import { FIREBASE_AUTH, FIRESTORE } from '../../constants/constant';
 import { uid, user, getAllForms } from '../../redux/actions/actions';
@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     paddingHorizontal: 15,
-    backgroundColor: '#fff',
+    backgroundColor: WhiteColor,
   },
   input: {
     width: '80%',
@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
   inputIconWrapper: {
     padding: 7,
     borderRadius: 3,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: GreyColor,
   },
   forgotPasswordWrapper: {
     alignSelf: 'flex-end',

@@ -37,6 +37,7 @@ import {
   GreyColor,
   GreenColor,
   OfficialColor,
+  BlackColor,
 } from '../../constants/colors';
 import store from '../../redux/store/store';
 
@@ -697,6 +698,7 @@ export default EditForm = () => {
           closeOnTouchOutside={false}
           closeOnHardwareBackPress={false}
           showCancelButton={true}
+          cancelButtonColor={"#b6b6b6"}
           cancelButtonStyle={{
             width: 70,
           }}
@@ -759,7 +761,7 @@ const styles = StyleSheet.create({
   },
   imagePickerText: {
     marginTop: 8,
-    color: '#000',
+    color: BlackColor,
   },
   bottomButtonWrapper: {
     marginTop: 20
@@ -793,9 +795,4 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: GreyColor,
   },
-  progressBar: {
-    backgroundColor: 'rgb(3, 154, 229)',
-    height: 3,
-    shadowColor: '#000',
-  }
 })
