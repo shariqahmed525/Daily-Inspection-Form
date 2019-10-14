@@ -10,13 +10,12 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
 } from 'react-native'
-import { useNavigation } from 'react-navigation-hooks';
+import { useNavigation, useNavigationParam } from 'react-navigation-hooks';
 import _ from 'lodash';
 import uuid from 'uuid';
-import moment from 'moment';
-import firebase from 'react-native-firebase';
 import ImagePicker from 'react-native-image-picker';
 import DatePicker from "react-native-modal-datetime-picker";
+import AwesomeAlert from '../../components/react-native-awesome-alerts';
 
 import Button from '../../components/Button';
 import CheckBox from '../../components/CheckBox';
@@ -41,54 +40,90 @@ import {
 } from '../../constants/colors';
 import store from '../../redux/store/store';
 
-export default NewForm = () => {
+export default EditForm = () => {
   const { navigate } = useNavigation();
 
-  let scrollRef = useRef(null);
+  const {
+    photoUrl,
+    photoName,
+    id: itemId,
+    unit: unitD,
+    date: dateE,
+    inspectionTypes,
+    category: categoryE,
+    comments: commentsE,
+    locationInspectedDesc,
+    reference: referenceE,
+    cleanType: cleanTypeE,
+    defectFound: defectFoundE,
+    inspectorName: inspectorNameD,
+    siteInspected: siteInspectedD,
+    operationsAffected: operationsAffectedE,
+    defectDescription: defectDescriptionE,
+  } = useNavigationParam('selectedListItem');
+
   const [isLoading, setIsLoading] = useState(false);
   const [loader, setLoader] = useState(false);
-  const [uid, setUid] = useState("")
+  const [uid, setUid] = useState("");
+  const [showAlert, setShowAlert] = useState(false);
+  const [errorTitle, setErrorTitle] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
+
+  let scrollRef = useRef(null);
 
   /* First Section */
-  const [inspectorName, setInspectorName] = useState("");
-  const [checkedInspection, setCheckedInspection] = useState([]);
+  const [inspectorName, setInspectorName] = useState(inspectorNameD);
+  const [checkedInspection, setCheckedInspection] = useState(inspectionTypes);
   const [inspectorNameError, setInspectorNameError] = useState("");
-  const [checkedInspectionOther, setCheckedInspectionOther] = useState("");
+  const [checkedInspectionOther, setCheckedInspectionOther] = useState(
+    inspectionTypes.includes("Other") ?
+      inspectionTypes[inspectionTypes.length - 1] :
+      ""
+  );
   const [checkedInspectionError, setCheckedInspectionError] = useState("");
   const [checkedInspectionOtherError, setCheckedInspectionOtherError] = useState("");
-  const [siteInspected, setSiteInspected] = useState("");
+  const [siteInspected, setSiteInspected] = useState(siteInspectedD);
   const [siteInspectedError, setSiteInspectedError] = useState("");
-  const [unit, setUnit] = useState("");
+  const [unit, setUnit] = useState(unitD);
   const [unitError, setUnitError] = useState("");
 
   /* Second Section */
-  const [descOfLocationInspected, setDescOfLocationInspected] = useState("");
+  const [descOfLocationInspected, setDescOfLocationInspected] = useState(locationInspectedDesc);
   const [descOfLocationInspectedError, setDescOfLocationInspectedError] = useState("");
-  const [cleanType, setCleanType] = useState("");
+  const [cleanType, setCleanType] = useState(cleanTypeE);
   const [cleanTypeError, setCleanTypeError] = useState("");
 
   /* Third Section */
-  const [comments, setComments] = useState("");
+  const [comments, setComments] = useState(commentsE);
   const [photoError, setPhotoError] = useState("");
-  const [selectedPhoto, setSelectedPhoto] = useState("");
+  const [selectedPhoto, setSelectedPhoto] = useState(photoUrl);
+  const [isChangePhoto, setIsChangePhoto] = useState(false);
 
   /* Fourth Section */
-  const [defectFound, setDefectFound] = useState("");
+  const [defectFound, setDefectFound] = useState(defectFoundE);
   const [defectFoundError, setDefectFoundError] = useState("");
-  const [operationsAffected, setOperationsAffected] = useState("");
+  const [operationsAffected, setOperationsAffected] = useState(operationsAffectedE);
   const [operationsAffectedError, setOperationsAffectedError] = useState("");
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState(
+    CATEGORIES.includes(categoryE) ?
+      categoryE :
+      "Other"
+  );
   const [categoryError, setCategoryError] = useState("");
-  const [otherCategory, setOtherCategory] = useState("");
+  const [otherCategory, setOtherCategory] = useState(
+    CATEGORIES.includes(categoryE) ?
+      "" :
+      categoryE
+  );
   const [otherCategoryError, setOtherCategoryError] = useState("");
-  const [defectDescription, setDefectDescription] = useState("");
+  const [defectDescription, setDefectDescription] = useState(defectDescriptionE);
   const [defectDescriptionError, setDefectDescriptionError] = useState("");
 
   /* Fifth section */
-  const [reference, setReference] = useState("");
+  const [reference, setReference] = useState(referenceE);
   const [referenceError, setReferenceError] = useState("");
   const [datePickerModal, setDatePickerModal] = useState(false);
-  const [date, setDate] = useState("");
+  const [date, setDate] = useState(dateE);
   const [dateError, setDateError] = useState("");
 
   useEffect(() => {
@@ -146,6 +181,7 @@ export default NewForm = () => {
         if (fileSize <= 40) {
           const source = response.uri;
           setPhotoError("");
+          setIsChangePhoto(true);
           setSelectedPhoto(source);
         }
         else {
@@ -174,8 +210,7 @@ export default NewForm = () => {
 
   const handleDatePicker = date => {
     setDateError("");
-    let makeDate = `${moment(date).format('D')} ${moment(date).format('MMMM')} ${moment(date).format('Y')}`;
-    setDate(makeDate);
+    setDate(`${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`)
   }
 
   const scrollUp = y => scrollRef.scrollTo({ x: 0, y: y, animated: true })
@@ -255,11 +290,16 @@ export default NewForm = () => {
     }
     else {
       setLoader(true);
-      uploadPhoto();
+      if (isChangePhoto) {
+        uploadPhoto();
+      }
+      else {
+        updateDetails(photoUrl, photoName)
+      }
     }
   }
 
-  const submitDetails = async (photoUrl, photoName) => {
+  const updateDetails = async (photoUrl, photoName) => {
     console.log(siteInspected, " siteInspected");
     console.log(unit, " unit");
     console.log(inspectorName, " inspectorName");
@@ -285,7 +325,7 @@ export default NewForm = () => {
     const filterCategory = category === "Other" ? otherCategory : category;
 
     try {
-      await FIRESTORE.collection('allforms').doc(uid).collection('form').add({
+      await FIRESTORE.collection('allforms').doc(uid).collection('form').doc(itemId).set({
         unit,
         date,
         comments,
@@ -299,10 +339,8 @@ export default NewForm = () => {
         defectDescription,
         operationsAffected,
         category: filterCategory,
-        time: new Date().toLocaleString(),
         inspectionTypes: filterInspectionTypes,
         locationInspectedDesc: descOfLocationInspected,
-        timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
       });
 
       setLoader(false);
@@ -330,14 +368,17 @@ export default NewForm = () => {
     }
     catch (err) {
       setLoader(false);
+      setShowAlert(true);
+      setErrorTitle("Error");
+      setErrorMsg("Uploading error. Please try again!");
       console.log(err, " error in submit new form details")
     }
   }
 
   const uploadPhoto = async () => {
     setLoader(true)
-    const ext = selectedPhoto.split('.').pop(); // Extract image extension
-    const filename = `${uuid()}.${ext}`; // Generate unique name
+    const ext = selectedPhoto.split('.').pop();
+    const filename = `${uuid()}.${ext}`;
     const destinationPath = `form/images/${filename}`;
     try {
       await FIREBASE_STORAGE
@@ -347,11 +388,14 @@ export default NewForm = () => {
         .ref(destinationPath)
         .getDownloadURL()
         .then(url => {
-          submitDetails(url, filename);
+          updateDetails(url, filename);
         })
     }
     catch (err) {
-      console.log("error in image upload");
+      setShowAlert(true);
+      setErrorTitle("Error");
+      setErrorMsg("Photo Uploading error. Please try again!");
+      console.log("error in Photo upload");
     }
   }
 
@@ -617,7 +661,7 @@ export default NewForm = () => {
         <Button
           disabled={loader}
           onPress={validateForm}
-          text={loader ? "Submitting..." : "Submit Details"}
+          text={loader ? "Updating..." : "Update Details"}
         />
       </View>
     )
@@ -625,25 +669,44 @@ export default NewForm = () => {
 
   return (
     isLoading ? (
-      <KeyboardAvoidingView
-        style={styles.keyboardAvoidingView}
-        behavior={Platform.OS === "ios" ? "padding" : null}
-      >
-        <ScrollView
-          ref={ref => scrollRef = ref}
-          keyboardShouldPersistTaps="handled"
-          contentContainerStyle={styles.container}
+      <>
+        <KeyboardAvoidingView
+          style={styles.keyboardAvoidingView}
+          behavior={Platform.OS === "ios" ? "padding" : null}
         >
-          <View>
-            {_renderFirstSectionFields()}
-            {_renderSecondSectionFields()}
-            {_renderThirdSectionFields()}
-            {_renderFourthSectionFields()}
-            {_renderFifthSectionFields()}
-            {_renderBottomButton()}
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+          <ScrollView
+            ref={ref => scrollRef = ref}
+            keyboardShouldPersistTaps="handled"
+            contentContainerStyle={styles.container}
+          >
+            <View>
+              {_renderFirstSectionFields()}
+              {_renderSecondSectionFields()}
+              {_renderThirdSectionFields()}
+              {_renderFourthSectionFields()}
+              {_renderFifthSectionFields()}
+              {_renderBottomButton()}
+            </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
+        <AwesomeAlert
+          show={showAlert}
+          showProgress={false}
+          title={errorTitle}
+          message={errorMsg}
+          closeOnTouchOutside={false}
+          closeOnHardwareBackPress={false}
+          showCancelButton={true}
+          cancelButtonStyle={{
+            width: 70,
+          }}
+          cancelButtonTextStyle={{
+            textAlign: 'center'
+          }}
+          cancelText="Ok"
+          onCancelPressed={() => setShowAlert(false)}
+        />
+      </>
     )
       :
       <View style={styles.loader}>

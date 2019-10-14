@@ -3,8 +3,9 @@ import {
   View,
   StyleSheet,
 } from 'react-native'
-import Box from '../../components/Box';
 import { useNavigation } from 'react-navigation-hooks';
+import Box from '../../components/Box';
+
 import { shadow, GreyColor, OfficialColor } from '../../constants/colors';
 import { FIREBASE_AUTH } from '../../constants/constant';
 

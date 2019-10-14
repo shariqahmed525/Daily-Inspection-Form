@@ -4,13 +4,18 @@ import {
   Text,
   Image,
   StyleSheet,
+  Dimensions,
   TouchableOpacity,
   ActivityIndicator,
+  TouchableNativeFeedback
 } from 'react-native'
 import { SwipeListView } from 'react-native-swipe-list-view';
+import { useNavigation } from 'react-navigation-hooks';
 
-import store from '../../redux/store/store'
-import { OfficialColor, RedColor, GreenColor, GreyColor } from '../../constants/colors';
+import store from '../../redux/store/store';
+import { OfficialColor, RedColor, GreyColor } from '../../constants/colors';
+
+const { width } = Dimensions.get('window');
 
 const ListButton = props => {
   return (
@@ -31,6 +36,7 @@ const ListButton = props => {
 }
 
 export default AllForms = () => {
+  const { navigate } = useNavigation();
 
   const [isLoading, setIsLoading] = useState(true);
   const [uid, setUid] = useState("");
@@ -48,6 +54,10 @@ export default AllForms = () => {
     setIsLoading(authReducers.loading);
   }
 
+  const deleteForm = (data) => {
+    console.log(data);
+  }
+
   return (
     <View style={styles.container}>
       {isLoading ?
@@ -57,37 +67,43 @@ export default AllForms = () => {
         :
         (allForms !== undefined && allForms !== null) ? allForms.length > 0 ? (
           <SwipeListView
-            disableRightSwipe
+            stopLeftSwipe={width / 2}
+            stopRightSwipe={-(width / 2)}
             data={allForms}
-            renderItem={(data, rowMap) => {
+            renderItem={(data) => {
               return (
-                <View style={styles.rowFront}>
-                  <Image
-                    style={styles.image}
-                    source={require('../../assets/home/all-forms.png')}
-                  />
-                  <View style={styles.listTextWrapper}>
-                    <Text style={styles.listText}>{data.item.siteInspected}</Text>
-                    <Text style={styles.listSubText}>29 September 2019</Text>
+                <TouchableNativeFeedback
+                  background={TouchableNativeFeedback.SelectableBackground()}
+                >
+                  <View style={styles.rowFront}>
+                    <Image
+                      style={styles.image}
+                      source={require('../../assets/home/all-forms.png')}
+                    />
+                    <View style={styles.listTextWrapper}>
+                      <Text style={styles.listText}>{data.item.siteInspected}</Text>
+                      <Text style={styles.listSubText}>{data.item.date}</Text>
+                    </View>
                   </View>
-                </View>
+                </TouchableNativeFeedback>
               )
             }}
-            renderHiddenItem={(data, rowMap) => (
+            renderHiddenItem={(data) => (
               <View style={styles.rowBack}>
                 <ListButton
                   style={styles.edit}
-                  // onPress={() => alert('Edit')}
+                  onPress={() => navigate('EditForm', { selectedListItem: data.item })}
                   icon={require('../../assets/file.png')}
                 />
                 <ListButton
                   style={styles.delete}
-                  // onPress={() => alert('Delete')}
+                  onPress={() => deleteForm(data.item)}
                   icon={require('../../assets/garbage.png')}
                 />
               </View>
             )}
-            rightOpenValue={-140}
+            leftOpenValue={70}
+            rightOpenValue={-70}
           />
         )
           :
@@ -128,24 +144,26 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
   },
   listButton: {
-    alignItems: 'center',
     justifyContent: 'center',
     padding: 10,
     borderBottomWidth: 1,
     borderBottomColor: "#c3c3c3",
   },
   delete: {
-    width: 70,
+    width: width / 2,
     height: '100%',
+    paddingRight: 25,
+    alignItems: 'flex-end',
     backgroundColor: RedColor,
   },
   edit: {
-    width: 70,
+    width: width / 2,
     height: '100%',
-    backgroundColor: GreenColor,
+    paddingLeft: 25,
+    backgroundColor: OfficialColor,
   },
   listButtonIcon: {
     width: 20,
