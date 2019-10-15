@@ -21,7 +21,7 @@ export default Home = () => {
         imageStyle={styles.mainImage}
         onPress={() => navigate('NewForm')}
         style={styles.firstContainer}
-        image={require('../../assets/home/new-form.png')}
+        image={require('../../assets/new-form.png')}
       />
       <View style={styles.secondContainer}>
         <Box
@@ -29,14 +29,14 @@ export default Home = () => {
           imageStyle={styles.image}
           onPress={() => navigate('AllForms')}
           style={styles.firstSubContainer}
-          image={require('../../assets/home/all-forms.png')}
+          image={require('../../assets/all-forms.png')}
         />
         <Box
           text="LOG OUT"
           imageStyle={styles.image}
           onPress={logout}
           style={styles.secondSubContainer}
-          image={require('../../assets/home/logout.png')}
+          image={require('../../assets/logout.png')}
         />
       </View>
     </View>

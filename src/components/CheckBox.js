@@ -14,8 +14,8 @@ export default CheckBox = props => {
           style={styles.checkBoxImage}
           source={
             checkedItems.includes(v) ?
-              require('../assets/login/check-square.png') :
-              require('../assets/login/unchecked.png')
+              require('../assets/check-square.png') :
+              require('../assets/unchecked.png')
           }
         />
         <Text style={styles.checkBoxText}>{v}</Text>

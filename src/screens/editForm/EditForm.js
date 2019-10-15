@@ -530,7 +530,7 @@ export default EditForm = () => {
                 <View style={styles.imageWrapper}>
                   <Image
                     style={styles.image}
-                    source={require('../../assets/form/photo-camera.png')}
+                    source={require('../../assets/photo-camera.png')}
                   />
                 </View>
                 <Text style={styles.imagePickerText}>Upload Photo</Text>

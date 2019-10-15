@@ -7,15 +7,15 @@ import {
   Dimensions,
   TouchableOpacity,
   ActivityIndicator,
-  TouchableNativeFeedback
-} from 'react-native'
+} from 'react-native';
+import RNPrint from 'react-native-print';
 import AwesomeAlert from '../../components/react-native-awesome-alerts';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import { useNavigation } from 'react-navigation-hooks';
 
 import store from '../../redux/store/store';
 import { OfficialColor, RedColor, GreyColor, BlackColor, WhiteColor } from '../../constants/colors';
-import { FIRESTORE } from '../../constants/constant';
+import { FIRESTORE, CATEGORIES, INSPECTION_TYPES } from '../../constants/constant';
 
 const { width } = Dimensions.get('window');
 
@@ -64,6 +64,274 @@ export default AllForms = () => {
     setDeleteObject(data);
   }
 
+
+  const header = (siteInspected, unit, date, time) => {
+    const table = "border: 1px solid black; border-collapse: collapse; table-layout:fixed; width:100%;";
+    const tdPadding = "padding:5px;";
+    const borderTop = "border-top:2px solid black;";
+    const borderLeft = "border-left:2px solid black;";
+    const borderBottom = "border-bottom:2px solid black;";
+    return (
+      `<table style="${table}" cellspacing="0">
+              <tbody>
+                <tr>
+                  <td style="${tdPadding} ${borderBottom} text-align:center;">
+                      <img src="https://i.ibb.co/yfsXZJ2/logo.png" style="width:120px; height:120px; padding:10px;" />
+                  </td>
+                  <td style="border:2px solid black; border-top:none; text-align:center; padding:10px">
+                      <h1>Daily Inpection Form</h1>
+                      <h3>Mafraq, Al-Khatim, Ghantoot, and TSE Plants</h3>
+                  </td>
+                 <td style="${borderBottom}">
+                    <table style="${table} height:200px; border:none;">
+                      <tr>
+                        <td style="${tdPadding}">Site Inspected</td>
+                        <td style="${tdPadding} ${borderLeft}">${siteInspected}</td>
+                      </tr>
+                      <tr>
+                        <td style="${tdPadding} ${borderTop}">Unit</td>
+                        <td style="${tdPadding} ${borderLeft} ${borderTop}">${unit}</td>
+                      </tr>
+                      <tr>
+                        <td style="${tdPadding} ${borderTop}">Date</td>
+                        <td style="${tdPadding} ${borderLeft} ${borderTop}">${date}</td>
+                      </tr>
+                      <tr>
+                        <td style="${tdPadding} ${borderTop}">Time</td>
+                        <td style="${tdPadding} ${borderLeft} ${borderTop}">${time.split(",")[1].trim()}</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+      `
+    )
+  }
+
+  const firstSection = (inspectorName, inspectionTypes) => {
+    const th = "text-align:left; padding-top:10px;";
+    const td = "padding-left:10px; padding-top:10px;";
+    let ins = INSPECTION_TYPES.map((v) => {
+      return (
+        inspectionTypes.includes(v) ?
+          `<p style="width:40px; border-bottom:1px solid black; display:inline-block; text-align:center;">
+              ✔
+            </p> <b style="margin-right:10;"> ${v}</b> `
+          :
+          ` ______ <b style="margin-right:10;"> ${v}</b>`
+      )
+    });
+    return (
+      `<table style="margin:20px; width: 100%">
+          <tbody>
+            <tr>
+              <th style="${th}">Inspector Name</th>
+              <td style="${td}">${inspectorName}</td>
+            </tr>
+            <tr>
+              <th style="${th}">Signature</th>
+              <td style="${td}">____________________________</td>
+            </tr>
+            <tr>
+              <th style="${th}">Inspector Type</th>
+              <td style="${td}">${ins.join(' ')}</td>
+            </tr>
+          </tbody>
+        </table>
+      `
+    )
+  }
+
+  const fieldHeadings = (text) => {
+    let div = `
+        border:1px solid black; 
+        padding: 5px 15px; 
+        background-color: #9ea989; 
+        font-family: sans-serif; 
+        margin:10px;
+      `;
+    return (
+      `<div style="${div}">
+        <p style="font-size:20px; font-weight:500;">${text}</p>
+       </div>
+      `
+    )
+  }
+
+  const secondSection = () => {
+    return (
+      `<div style="margin:20px; padding:10px 0px;">
+        <div style="border-bottom: 1px solid black; padding-bottom:5px;">
+            Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+        </div>
+        <div style="padding-top:10px">
+          <b>Clean ?</b> ....... <b style="margin-left:10">Not Clean ?</b> .......
+        </div>
+      </div>
+      `
+    )
+  }
+
+  const thirdSection = () => {
+    const td = "padding:10px 10px;";
+    return (
+      `<div style="margin:20px;">
+        <table style="border:1px solid black; table-layout:fixed; width:100%;">
+          <tbody>
+            <tr>
+              <td style="${td}">
+                Lorem ipsum dolor sit amet consectetur adipisicing elit.
+              </td>
+              <td style="${td} border-left: 2px solid black; text-align:center;">
+                <img src="https://i.ibb.co/yfsXZJ2/logo.png" style="width:100px; height:100px; padding:10px;" />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      `
+    )
+  }
+
+  const fourthSection = (param) => {
+    let cat = CATEGORIES.map((v) => {
+      return (
+        CATEGORIES.includes(param) ?
+          param == v ?
+            `<b style="margin-left:10;">${v}</b> 
+            <p style="width:40px; border-bottom:1px solid black; display:inline-block; text-align:center;">
+              ✔
+            </p>`
+            :
+            `<b style="margin-left:10;">${v}</b> ______`
+          :
+          `<b style="margin-left:10">${v}</b>
+            ${
+          v == "Other" ?
+            `<p style="border-bottom:1px solid black; display:inline-block; text-align:center; padding:0px 10px">
+                ${param}
+              </p>`
+            :
+            '______'
+          }
+          `
+      )
+    })
+    let border = "border: 1px solid black;";
+    let td = "padding:20px; text-align:center;";
+    let th = "padding:10px 20px;";
+    return (
+      `<div style="margin:20px; padding:10px 0px;">
+        <div style="padding-top:10px">
+          <b>Defect found during inspection ?</b> <b style="margin-left:10">Yes</b> ______ <b style="margin-left:10">No</b> ______
+        </div>
+        <div style="padding-top:10px">
+          <b>Operations Affected:</b> <b style="margin-left:10">Yes</b> ______ <b style="margin-left:10">No</b> ______ <b style="margin-left:10">Potential</b> ______
+        </div>
+        <div style="padding-top:10px">
+          <b>Defect found during inspection ?</b> <b style="margin-left:10">Yes</b> ______ <b style="margin-left:10">No</b> ______
+        </div>
+        <div style="padding-top:10px">
+          <b>Defect Category:</b> ${cat.join(' ')}
+        </div>
+
+        <div style="padding-top:20px">
+          <b>Defect Description: </b> <span style="margin-left:10">
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Officiis minima ad at autem eveniet aspernatur aperiam debitis quam dolorem maxime sequi.</span>
+        </div>
+        
+        <div>
+          <h4>Seperate Detect Notification From Created: </h4>
+        </div>
+
+        <div>
+          <b>Date: </b> <p style="border-bottom:1px solid black; display:inline; text-align:center; padding:0px 10px">29 October 2019</p>
+          <b style="margin-left:15px;">Reference: </b> <p style="border-bottom:1px solid black; display:inline; text-align:center; padding:0px 10px">My friends referred me</p>
+        </div>
+
+          <center>
+            <table style="${border} margin-top:30px;" cellspacing="0">
+              <tr>
+                <th style="${border} ${th}"></th>
+                <th style="${border} ${th}">NAME &amp; DESIGNATION</th>
+                <th style="${border} ${th}">DATE</th>
+                <th style="${border} ${th}">SIGNATURE</th>
+              </tr>
+              <tr>
+                <th style="${border} ${th} width:100px">Reviewed By:</th>
+                <td style="${border} ${td}">
+                  <br />
+                  ..........................................<br />
+                    <p>O&amp;M Engineer</p>
+                </td>
+                <td style="${border} ${td} width:100px"></td>
+                <td style="${border} ${td} width:150px"></td>
+              </tr>
+              <tr>
+                <th style="${border} ${th} width:100px">Approved By:</th>
+                <td style="${border} ${td}">
+                  <br />
+                  ..........................................<br />
+                    <p>Senior O&amp;M Engineer </p>
+                </td>
+                <td style="${border} ${td} width:100px"></td>
+                <td style="${border} ${td} width:150px"></td>
+              </tr>
+            </table>
+          </center>
+          <p style="margin-top: 20px; text-align:center; font-size:12px; color:#666;">
+            THIS DOCUMENT IS THE  PROPERTY OF ADSSC AND CANNOT BE USED OR GIVEN TO OUTSIDE PARTY WITHOUT THE CONSENT OF MANAGEMENT REPRESENTATION
+          </p>
+      </div>
+      `
+    )
+  }
+
+  const printHTML = async (data) => {
+    const { siteInspected, unit, date, time, inspectorName, inspectionTypes } = data;
+    console.log(data);
+    await RNPrint.print({
+      // A4 or Letter
+      html: `
+        <div style="border:2px solid black; height:98%; padding:10px;">
+          <div style="border:2px solid black; height:99.5%;">
+            ${header(siteInspected, unit, date, time)}
+            ${firstSection(inspectorName, inspectionTypes)}
+            ${fieldHeadings("Brief Description of Location Inspected:")}
+            ${secondSection()}
+            ${fieldHeadings("General Observation and Comments:")}
+            ${thirdSection()}
+          </div>
+        </div>
+        <div style="border:2px solid black; height:98%; padding:10px; margin-top:20px">
+          <div style="border:2px solid black;  height:99.5%;">
+          <div style="margin-top:20px" />
+          ${fieldHeadings("Defect Record:")}
+          ${fourthSection("Civil")}
+          </div>
+        </div>
+      `,
+
+      // PRC 10
+      // html: `
+      //   <div style="border:2px solid black; flex:1; padding:10px;">
+      //     <div style="border:2px solid black; flex:1;">
+      //       ${header()}
+      //       ${firstSection()}
+      //       ${fieldHeadings("Brief Description of Location Inspected:")}
+      //       ${secondSection()}
+      //       ${fieldHeadings("General Observation and Comments:")}
+      //       ${thirdSection()}
+      //       ${fieldHeadings("Defect Record:")}
+      //       ${fourthSection("Civil")}
+      //     </div>
+      //   </div>
+      // `,
+
+    })
+  }
+
   const deleteForm = () => {
     const { id } = deleteObject
     setProgress(true)
@@ -97,20 +365,24 @@ export default AllForms = () => {
               data={allForms}
               renderItem={(data) => {
                 return (
-                  <TouchableNativeFeedback
-                    background={TouchableNativeFeedback.SelectableBackground()}
-                  >
-                    <View style={styles.rowFront}>
-                      <Image
-                        style={styles.image}
-                        source={require('../../assets/home/all-forms.png')}
-                      />
-                      <View style={styles.listTextWrapper}>
-                        <Text style={styles.listText}>{data.item.siteInspected}</Text>
-                        <Text style={styles.listSubText}>{data.item.date}</Text>
-                      </View>
+                  <View style={styles.rowFront}>
+                    <Image
+                      style={styles.image}
+                      source={require('../../assets/all-forms.png')}
+                    />
+                    <View style={styles.listTextWrapper}>
+                      <Text style={styles.listText}>{data.item.siteInspected}</Text>
+                      <Text style={styles.listSubText}>{data.item.date}</Text>
                     </View>
-                  </TouchableNativeFeedback>
+                    <View style={styles.printIcon}>
+                      <TouchableOpacity onPress={() => printHTML(data.item)}>
+                        <Image
+                          style={styles.image}
+                          source={require('../../assets/printer.png')}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
                 )
               }}
               renderHiddenItem={(data) => (
@@ -230,5 +502,9 @@ const styles = StyleSheet.create({
   notFormText: {
     fontSize: 20,
     color: BlackColor
-  }
+  },
+  printIcon: {
+    flex: 1,
+    alignItems: 'flex-end',
+  },
 })

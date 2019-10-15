@@ -99,6 +99,7 @@ export default Login = () => {
   useEffect(() => {
     checkSession();
     SplashScreen.hide();
+
   }, [])
 
   const checkSession = () => {
@@ -115,6 +116,7 @@ export default Login = () => {
       }
     })
   }
+
 
   return (
     isLoading && (
@@ -136,7 +138,7 @@ export default Login = () => {
             setEmail(e);
             setEmailError("");
           }}
-          inputIcon={require('../../assets/login/email.png')}
+          inputIcon={require('../../assets/email.png')}
         />
         <Input
           value={password}
@@ -149,11 +151,11 @@ export default Login = () => {
             setPasswordError("");
           }}
           onShowPasswordPress={() => setShowPassword(!showPassword)}
-          inputIcon={require('../../assets/login/locked.png')}
+          inputIcon={require('../../assets/locked.png')}
           rightIcon={
             showPassword ?
-              require('../../assets/login/eye.png') :
-              require('../../assets/login/visibility.png')
+              require('../../assets/eye.png') :
+              require('../../assets/visibility.png')
           }
         />
         <TouchableOpacity

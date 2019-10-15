@@ -14,8 +14,8 @@ export default RadioButtons = props => {
           style={styles.radioButtonImage}
           source={
             selectedOption === v ?
-              require('../assets/form/radio-filled.png') :
-              require('../assets/form/radio-unfilled.png')
+              require('../assets/radio-filled.png') :
+              require('../assets/radio-unfilled.png')
           }
         />
         <Text style={styles.radioButtonText}>{v}</Text>
