@@ -404,7 +404,7 @@ export default EditForm = () => {
 
   const _renderFirstSectionFields = () => {
     return (
-      <>
+      <View style={{ ...styles.paddingHorizontal, marginTop: 10 }}>
         <InputField
           value={siteInspected}
           label='Site Inspected *'
@@ -459,7 +459,7 @@ export default EditForm = () => {
             }}
           />
         )}
-      </>
+      </View>
     )
   }
 
@@ -467,26 +467,28 @@ export default EditForm = () => {
     return (
       <>
         <FieldsHeading text="Brief Description of Location Inspected" />
-        <InputField
-          multiline
-          value={descOfLocationInspected}
-          error={descOfLocationInspectedError}
-          onChangeText={(e) => {
-            setDescOfLocationInspected(e)
-            setDescOfLocationInspectedError("")
-          }}
-          label='Description of Location Inspected *'
-        />
-        <RadioButtons
-          items={CLEANING_TYPES}
-          handleRadioOptions={handleCleaningTypes}
-          selectedOption={cleanType}
-        />
-        {cleanTypeError !== "" && (
-          <Text style={styles.error}>
-            {cleanTypeError}
-          </Text>
-        )}
+        <View style={styles.paddingHorizontal}>
+          <InputField
+            multiline
+            value={descOfLocationInspected}
+            error={descOfLocationInspectedError}
+            onChangeText={(e) => {
+              setDescOfLocationInspected(e)
+              setDescOfLocationInspectedError("")
+            }}
+            label='Description of Location Inspected *'
+          />
+          <RadioButtons
+            items={CLEANING_TYPES}
+            handleRadioOptions={handleCleaningTypes}
+            selectedOption={cleanType}
+          />
+          {cleanTypeError !== "" && (
+            <Text style={styles.error}>
+              {cleanTypeError}
+            </Text>
+          )}
+        </View>
       </>
     )
   }
@@ -495,45 +497,24 @@ export default EditForm = () => {
     return (
       <>
         <FieldsHeading text="General Observations &amp; Comments" />
-        <InputField
-          multiline
-          value={comments}
-          label='Comments'
-          onChangeText={(e) => setComments(e)}
-        />
-        {selectedPhoto !== "" ? (
-          <>
-            <TouchableOpacity
-              activeOpacity={.8}
-              onPress={handleImagePicker}
-              style={styles.selectedPhotoWrapper}
-            >
-              <Image
-                style={styles.selectedPhoto}
-                source={{ uri: selectedPhoto }}
-              />
-            </TouchableOpacity>
-            {photoError !== "" && (
-              <Text style={styles.error}>
-                {photoError}
-              </Text>
-            )}
-          </>
-        ) :
-          (
+        <View style={styles.paddingHorizontal}>
+          <InputField
+            multiline
+            value={comments}
+            label='Comments'
+            onChangeText={(e) => setComments(e)}
+          />
+          {selectedPhoto !== "" ? (
             <>
               <TouchableOpacity
                 activeOpacity={.8}
                 onPress={handleImagePicker}
-                style={styles.imagePickerWrapper}
+                style={styles.selectedPhotoWrapper}
               >
-                <View style={styles.imageWrapper}>
-                  <Image
-                    style={styles.image}
-                    source={require('../../assets/photo-camera.png')}
-                  />
-                </View>
-                <Text style={styles.imagePickerText}>Upload Photo</Text>
+                <Image
+                  style={styles.selectedPhoto}
+                  source={{ uri: selectedPhoto }}
+                />
               </TouchableOpacity>
               {photoError !== "" && (
                 <Text style={styles.error}>
@@ -541,7 +522,30 @@ export default EditForm = () => {
                 </Text>
               )}
             </>
-          )}
+          ) :
+            (
+              <>
+                <TouchableOpacity
+                  activeOpacity={.8}
+                  onPress={handleImagePicker}
+                  style={styles.imagePickerWrapper}
+                >
+                  <View style={styles.imageWrapper}>
+                    <Image
+                      style={styles.image}
+                      source={require('../../assets/photo-camera.png')}
+                    />
+                  </View>
+                  <Text style={styles.imagePickerText}>Upload Photo</Text>
+                </TouchableOpacity>
+                {photoError !== "" && (
+                  <Text style={styles.error}>
+                    {photoError}
+                  </Text>
+                )}
+              </>
+            )}
+        </View>
       </>
     )
   }
@@ -550,78 +554,80 @@ export default EditForm = () => {
     return (
       <>
         <FieldsHeading text="Defect Record" />
-        <Text style={styles.marginLable}>
-          Defect found during inspection? *
+        <View style={styles.paddingHorizontal}>
+          <Text style={styles.marginLable}>
+            Defect found during inspection? *
         </Text>
-        <RadioButtons
-          items={DEFECT_FOUND_DURING_INSPECTIONS}
-          handleRadioOptions={handleDefectFound}
-          selectedOption={defectFound}
-        />
-        {defectFoundError !== "" && (
-          <Text style={styles.error}>
-            {defectFoundError}
-          </Text>
-        )}
+          <RadioButtons
+            items={DEFECT_FOUND_DURING_INSPECTIONS}
+            handleRadioOptions={handleDefectFound}
+            selectedOption={defectFound}
+          />
+          {defectFoundError !== "" && (
+            <Text style={styles.error}>
+              {defectFoundError}
+            </Text>
+          )}
 
-        <Text style={styles.marginLable}>
-          Operations Affected *
+          <Text style={styles.marginLable}>
+            Operations Affected *
         </Text>
-        <RadioButtons
-          items={OPERATIONS_AFFECTED}
-          handleRadioOptions={handleOperationsAffected}
-          selectedOption={operationsAffected}
-        />
-        {operationsAffectedError !== "" && (
-          <Text style={styles.error}>
-            {operationsAffectedError}
-          </Text>
-        )}
+          <RadioButtons
+            items={OPERATIONS_AFFECTED}
+            handleRadioOptions={handleOperationsAffected}
+            selectedOption={operationsAffected}
+          />
+          {operationsAffectedError !== "" && (
+            <Text style={styles.error}>
+              {operationsAffectedError}
+            </Text>
+          )}
 
-        <Text style={styles.marginLable}>
-          Defect Category *
+          <Text style={styles.marginLable}>
+            Defect Category *
         </Text>
-        <RadioButtons
-          items={CATEGORIES}
-          handleRadioOptions={handleCategory}
-          selectedOption={category}
-        />
-        {categoryError !== "" && (
-          <Text style={styles.error}>
-            {categoryError}
-          </Text>
-        )}
+          <RadioButtons
+            items={CATEGORIES}
+            handleRadioOptions={handleCategory}
+            selectedOption={category}
+          />
+          {categoryError !== "" && (
+            <Text style={styles.error}>
+              {categoryError}
+            </Text>
+          )}
 
-        {category === "Other" && (
+          {category === "Other" && (
+            <InputField
+              value={otherCategory}
+              label='Enter category name *'
+              error={otherCategoryError}
+              onChangeText={(e) => {
+                setOtherCategory(e);
+                setCategoryError("");
+                setOtherCategoryError("");
+              }}
+            />
+          )}
+
           <InputField
-            value={otherCategory}
-            label='Enter category name *'
-            error={otherCategoryError}
+            multiline
+            value={defectDescription}
+            label='Defect Description *'
+            error={defectDescriptionError}
             onChangeText={(e) => {
-              setOtherCategory(e);
-              setCategoryError("");
-              setOtherCategoryError("");
+              setDefectDescription(e);
+              setDefectDescriptionError("");
             }}
           />
-        )}
-
-        <InputField
-          multiline
-          value={defectDescription}
-          label='Defect Description *'
-          error={defectDescriptionError}
-          onChangeText={(e) => {
-            setDefectDescription(e);
-            setDefectDescriptionError("");
-          }}
-        />
+        </View>
       </>
     )
   }
 
   const _renderFifthSectionFields = () => {
     return (
-      <>
+      <View style={styles.paddingHorizontal}>
         <Text style={styles.marginLable}>
           Seperate Defect Notification From Created
         </Text>
@@ -652,13 +658,18 @@ export default EditForm = () => {
             setReferenceError("");
           }}
         />
-      </>
+      </View>
     )
   }
 
   const _renderBottomButton = () => {
     return (
-      <View style={styles.bottomButtonWrapper}>
+      <View
+        style={{
+          ...styles.paddingHorizontal,
+          ...styles.bottomButtonWrapper,
+        }}
+      >
         <Button
           disabled={loader}
           onPress={validateForm}
@@ -722,8 +733,10 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     paddingTop: '2%',
     paddingBottom: '6%',
-    paddingHorizontal: '6%',
     backgroundColor: GreyColor,
+  },
+  paddingHorizontal: {
+    paddingHorizontal: '6%',
   },
   lable: {
     marginVertical: 10,

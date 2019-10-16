@@ -1,6 +1,6 @@
 import React from 'react'
 import { View, Text, StyleSheet } from 'react-native'
-import { GreenColor } from '../constants/colors'
+import { GreenColor, WhiteColor } from '../constants/colors'
 
 export default FieldsHeading = props => (
   <View style={styles.fieldHeadingWrapper}>
@@ -16,9 +16,10 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 10,
     borderColor: GreenColor,
+    backgroundColor: GreenColor,
   },
   fieldHeadingText: {
     fontSize: 16,
-    color: GreenColor,
+    color: WhiteColor,
   },
 })

@@ -112,33 +112,44 @@ export default AllForms = () => {
   const firstSection = (inspectorName, inspectionTypes) => {
     const th = "text-align:left; padding-top:10px;";
     const td = "padding-left:10px; padding-top:10px;";
+    const span = "border-bottom:1px solid black; padding: 0px 20px;  line-height: 32px;";
     let ins = INSPECTION_TYPES.map((v) => {
       return (
         inspectionTypes.includes(v) ?
-          `<p style="width:40px; border-bottom:1px solid black; display:inline-block; text-align:center;">
-              ✔
-            </p> <b style="margin-right:10;"> ${v}</b> `
+          v === "Other" ?
+            `<span style="${span}">✔</span> 
+            <b>${v}</b> 
+            <span style="${span}">
+              ${inspectionTypes[inspectionTypes.length - 1]}
+            </span>`
+            :
+            `<span style="${span}">✔</span>
+            <b style="margin-right:10px;"> ${v}</b> `
           :
-          ` ______ <b style="margin-right:10;"> ${v}</b>`
+          `<span style="${span}"></span> 
+            <b style="margin-right:10px;"> ${v}</b>`
       )
     });
     return (
-      `<table style="margin:20px; width: 100%">
-          <tbody>
-            <tr>
-              <th style="${th}">Inspector Name</th>
-              <td style="${td}">${inspectorName}</td>
-            </tr>
-            <tr>
-              <th style="${th}">Signature</th>
-              <td style="${td}">____________________________</td>
-            </tr>
-            <tr>
-              <th style="${th}">Inspector Type</th>
-              <td style="${td}">${ins.join(' ')}</td>
-            </tr>
-          </tbody>
+      `<div style="margin:20px;">
+          <table cellspacing="0">
+            <tbody>
+              <tr>
+                <th style="${th} width:120px;">Inspector Name</th>
+                <td style="${td}">${inspectorName}</td>
+              </tr>
+              <tr>
+                <th style="${th} padding-top:20px;">Signature</th>
+                <td style="${td} padding-top:20px;"><span style="border-bottom:1px solid black; padding: 0px 100px;"></span></td>
+              </tr>
+              <tr>
+                <th style="${th}" valign="top">Inspector Type</th>
+                <td style="${td}" valign="top">${ins.join(' ')}</td>
+              </tr>
+            </tbody>
+          </table>
         </table>
+      </div>
       `
     )
   }
@@ -146,7 +157,7 @@ export default AllForms = () => {
   const fieldHeadings = (text) => {
     let div = `
         border:1px solid black; 
-        padding: 5px 15px; 
+        padding: 3px 15px; 
         background-color: #9ea989; 
         font-family: sans-serif; 
         margin:10px;
@@ -159,21 +170,29 @@ export default AllForms = () => {
     )
   }
 
-  const secondSection = () => {
+  const secondSection = (cleanType, locationInspectedDesc) => {
     return (
-      `<div style="margin:20px; padding:10px 0px;">
+      `<div style="margin:10px 20px 10px 20px; padding:10px 0px;">
         <div style="border-bottom: 1px solid black; padding-bottom:5px;">
-            Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+            ${locationInspectedDesc}
         </div>
         <div style="padding-top:10px">
-          <b>Clean ?</b> ....... <b style="margin-left:10">Not Clean ?</b> .......
+          <b>Clean ?</b>
+          ${cleanType == "Clean ?" ?
+        `<span style="border-bottom:1px dotted black; padding: 0px 10px;">✔</span>` :
+        `<span style="border-bottom:1px dotted black; padding: 0px 17px;"></span>`}
+          
+          <b style="margin-left:10">Not Clean ?</b>
+           ${cleanType == "Not Clean ?" ?
+        `<span style="border-bottom:1px dotted black; padding: 0px 10px;">✔</span>` :
+        `<span style="border-bottom:1px dotted black; padding: 0px 17px;"></span>`}
         </div>
       </div>
       `
     )
   }
 
-  const thirdSection = () => {
+  const thirdSection = (comments, photoUrl) => {
     const td = "padding:10px 10px;";
     return (
       `<div style="margin:20px;">
@@ -181,10 +200,12 @@ export default AllForms = () => {
           <tbody>
             <tr>
               <td style="${td}">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                <span style="border-bottom: 1px solid #000; line-height: 27px;">
+                  ${comments}
+                </span>
               </td>
               <td style="${td} border-left: 2px solid black; text-align:center;">
-                <img src="https://i.ibb.co/yfsXZJ2/logo.png" style="width:100px; height:100px; padding:10px;" />
+                <img src="${photoUrl}" style="width:100px; height:100px; padding:10px;" />
               </td>
             </tr>
           </tbody>
@@ -194,26 +215,23 @@ export default AllForms = () => {
     )
   }
 
-  const fourthSection = (param) => {
+  const fourthSection = (defectFound, operationsAffected, catParam, defectDescription, date, reference) => {
     let cat = CATEGORIES.map((v) => {
       return (
-        CATEGORIES.includes(param) ?
-          param == v ?
-            `<b style="margin-left:10;">${v}</b> 
-            <p style="width:40px; border-bottom:1px solid black; display:inline-block; text-align:center;">
-              ✔
-            </p>`
+        CATEGORIES.includes(catParam) ?
+          catParam == v ?
+            `<b style="margin-left:10px">${v}</b>
+            <span style="border-bottom:1px solid black; padding: 0px 10px;">✔</span>`
             :
-            `<b style="margin-left:10;">${v}</b> ______`
+            `<b style="margin-left:10px">${v}</b> 
+            <span style="border-bottom:1px solid black; padding: 0px 17px;"></span>`
           :
-          `<b style="margin-left:10">${v}</b>
+          `<b style="margin-left:10px">${v}</b>
             ${
           v == "Other" ?
-            `<p style="border-bottom:1px solid black; display:inline-block; text-align:center; padding:0px 10px">
-                ${param}
-              </p>`
+            `<span style="border-bottom:1px solid black; padding: 0px 10px; line-height:25px;">${catParam}</span>`
             :
-            '______'
+            '<span style="border-bottom:1px solid black; padding: 0px 17px; line-height:25px;"></span>'
           }
           `
       )
@@ -222,32 +240,73 @@ export default AllForms = () => {
     let td = "padding:20px; text-align:center;";
     let th = "padding:10px 20px;";
     return (
-      `<div style="margin:20px; padding:10px 0px;">
+      `<div style="margin:10px 20px 0px 20px; padding:0px 0px;">
         <div style="padding-top:10px">
-          <b>Defect found during inspection ?</b> <b style="margin-left:10">Yes</b> ______ <b style="margin-left:10">No</b> ______
-        </div>
-        <div style="padding-top:10px">
-          <b>Operations Affected:</b> <b style="margin-left:10">Yes</b> ______ <b style="margin-left:10">No</b> ______ <b style="margin-left:10">Potential</b> ______
-        </div>
-        <div style="padding-top:10px">
-          <b>Defect found during inspection ?</b> <b style="margin-left:10">Yes</b> ______ <b style="margin-left:10">No</b> ______
-        </div>
-        <div style="padding-top:10px">
-          <b>Defect Category:</b> ${cat.join(' ')}
-        </div>
-
-        <div style="padding-top:20px">
-          <b>Defect Description: </b> <span style="margin-left:10">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Officiis minima ad at autem eveniet aspernatur aperiam debitis quam dolorem maxime sequi.</span>
+          <b>Defect found during inspection ?</b> 
+          <b style="margin-left:10">Yes</b> 
+            ${defectFound == "Yes" ?
+        `<span style="border-bottom:1px solid black; padding: 0px 10px;">✔</span>` :
+        `<span style="border-bottom:1px solid black; padding: 0px 17px;"></span>`}
+              
+              <b style="margin-left:10">No</b> 
+              ${defectFound == "No" ?
+        `<span style="border-bottom:1px solid black; padding: 0px 10px;">✔</span>` :
+        `<span style="border-bottom:1px solid black; padding: 0px 17px;"></span>`}
         </div>
         
+        <div style="padding-top:10px">
+          <b>Operations Affected:</b> 
+          
+          <b style="margin-left:10">Yes</b> 
+          ${operationsAffected == "Yes" ?
+        `<span style="border-bottom:1px solid black; padding: 0px 10px;">✔</span>` :
+        `<span style="border-bottom:1px solid black; padding: 0px 17px;"></span>`}
+              
+          <b style="margin-left:10">No</b> 
+            ${operationsAffected == "No" ?
+        `<span style="border-bottom:1px solid black; padding: 0px 10px;">✔</span>` :
+        `<span style="border-bottom:1px solid black; padding: 0px 17px;"></span>`}
+          
+          <b style="margin-left:10">Potential</b> 
+          ${operationsAffected == "Potential" ?
+        `<span style="border-bottom:1px solid black; padding: 0px 10px;">✔</span>` :
+        `<span style="border-bottom:1px solid black; padding: 0px 17px;"></span>`}
+              
+        </div>
+
+        <div style="padding-top:7px; padding-bottom:10px;">
+          <table style="width:100%">
+            <tr>
+              <td style="width:130px;" valign="top">
+                <b>Defect Category:</b> 
+              </td>
+              <td>
+                ${cat.join(' ')}
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        <div style="padding-top:0px">
+          <b>Defect Description: </b> 
+          <span style="margin-left:10px; border-bottom: 1px solid #000; line-height: 27px; padding:0px 10px;">
+              ${defectDescription}
+          </span>
+        </div>
+
         <div>
           <h4>Seperate Detect Notification From Created: </h4>
         </div>
 
         <div>
-          <b>Date: </b> <p style="border-bottom:1px solid black; display:inline; text-align:center; padding:0px 10px">29 October 2019</p>
-          <b style="margin-left:15px;">Reference: </b> <p style="border-bottom:1px solid black; display:inline; text-align:center; padding:0px 10px">My friends referred me</p>
+          <b>Date: </b>
+          <span style="margin-left:10px; border-bottom: 1px solid #000; line-height: 27px; padding:0px 10px;">
+              ${date}
+          </span>
+          <b style="margin-left:15px;">Reference: </b> 
+          <span style="margin-left:10px; border-bottom: 1px solid #000; line-height: 27px; padding:0px 10px;">
+              ${reference}
+          </span>
         </div>
 
           <center>
@@ -289,7 +348,24 @@ export default AllForms = () => {
   }
 
   const printHTML = async (data) => {
-    const { siteInspected, unit, date, time, inspectorName, inspectionTypes } = data;
+    const {
+      unit,
+      date,
+      time,
+      photoUrl,
+      comments,
+      category,
+      cleanType,
+      reference,
+      defectFound,
+      inspectorName,
+      siteInspected,
+      inspectionTypes,
+      defectDescription,
+      operationsAffected,
+      locationInspectedDesc,
+    } = data;
+
     console.log(data);
     await RNPrint.print({
       // A4 or Letter
@@ -299,16 +375,16 @@ export default AllForms = () => {
             ${header(siteInspected, unit, date, time)}
             ${firstSection(inspectorName, inspectionTypes)}
             ${fieldHeadings("Brief Description of Location Inspected:")}
-            ${secondSection()}
+            ${secondSection(cleanType, locationInspectedDesc)}
             ${fieldHeadings("General Observation and Comments:")}
-            ${thirdSection()}
+            ${thirdSection(comments, photoUrl)}
           </div>
         </div>
         <div style="border:2px solid black; height:98%; padding:10px; margin-top:20px">
           <div style="border:2px solid black;  height:99.5%;">
           <div style="margin-top:20px" />
           ${fieldHeadings("Defect Record:")}
-          ${fourthSection("Civil")}
+          ${fourthSection(defectFound, operationsAffected, category, defectDescription, date, reference)}
           </div>
         </div>
       `,
@@ -317,18 +393,17 @@ export default AllForms = () => {
       // html: `
       //   <div style="border:2px solid black; flex:1; padding:10px;">
       //     <div style="border:2px solid black; flex:1;">
-      //       ${header()}
-      //       ${firstSection()}
-      //       ${fieldHeadings("Brief Description of Location Inspected:")}
-      //       ${secondSection()}
-      //       ${fieldHeadings("General Observation and Comments:")}
-      //       ${thirdSection()}
-      //       ${fieldHeadings("Defect Record:")}
-      //       ${fourthSection("Civil")}
+      //      ${header(siteInspected, unit, date, time)}
+      //        ${firstSection(inspectorName, inspectionTypes)}
+      //        ${fieldHeadings("Brief Description of Location Inspected:")}
+      //        ${secondSection(cleanType, locationInspectedDesc)}
+      //        ${fieldHeadings("General Observation and Comments:")}
+      //        ${thirdSection(comments, photoUrl)}
+      //        ${fieldHeadings("Defect Record:")}
+      //        ${fourthSection(defectFound, operationsAffected, category, defectDescription, date, reference)}
       //     </div>
       //   </div>
       // `,
-
     })
   }
 
