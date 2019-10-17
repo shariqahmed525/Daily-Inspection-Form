@@ -3,6 +3,7 @@ import {
   Text,
   View,
   Image,
+  Keyboard,
   Platform,
   StyleSheet,
   ScrollView,
@@ -39,6 +40,7 @@ import {
   GreenColor,
   OfficialColor,
   BlackColor,
+  WhiteColor,
 } from '../../constants/colors';
 import store from '../../redux/store/store';
 
@@ -587,8 +589,9 @@ export default NewForm = () => {
         <Text style={styles.marginLable}>
           Seperate Defect Notification From Created
         </Text>
+
         <TouchableOpacity
-          activeOpacity={.5}
+          activeOpacity={.8}
           style={styles.datePickerButton}
           onPress={() => setDatePickerModal(true)}
         >
@@ -729,11 +732,21 @@ const styles = StyleSheet.create({
   },
   datePickerButton: {
     marginTop: 15,
+    marginBottom: 10,
+    borderColor: GreenColor,
+    backgroundColor: GreenColor,
+    borderRadius: 3,
+    borderWidth: 1,
+    paddingVertical: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flex: 1,
+    width: 120,
   },
   datePickerButtonText: {
     fontSize: 17,
-    color: GreenColor,
-    marginBottom: 10,
+    color: WhiteColor,
+    // marginBottom: 10,
   },
   date: {
     marginTop: 10,

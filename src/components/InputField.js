@@ -7,6 +7,7 @@ export default InputField = props => {
   return (
     <TextField
       {...props}
+      labelHeight={15}
       textColor="#000"
       value={props.value}
       label={props.label}
@@ -14,7 +15,6 @@ export default InputField = props => {
       tintColor={GreenColor}
       onChangeText={props.onChangeText}
       containerStyle={styles.inputContainer}
-      labelHeight={15}
     />
   )
 }

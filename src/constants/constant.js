@@ -24,6 +24,7 @@ export const DEFECT_FOUND_DURING_INSPECTIONS = [
 export const OPERATIONS_AFFECTED = [
   "Yes",
   "No",
+  "Potential",
 ];
 
 export const CATEGORIES = [
