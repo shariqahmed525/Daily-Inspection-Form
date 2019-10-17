@@ -83,8 +83,8 @@ const Stack = createStackNavigator({
     }
   },
 }, {
-  initialRouteName: "Home"
-});
+    initialRouteName: "Home"
+  });
 
 const MainStack = createSwitchNavigator({
   MainScreen: {
@@ -97,8 +97,8 @@ const MainStack = createSwitchNavigator({
     }
   },
 }, {
-  initialRouteName: "Login"
-})
+    initialRouteName: "Login"
+  })
 
 const AppContainer = createAppContainer(MainStack);
 

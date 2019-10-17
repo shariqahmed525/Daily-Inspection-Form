@@ -4,22 +4,21 @@ import {
   Text,
   Image,
   StyleSheet,
-  TouchableNativeFeedback
+  TouchableOpacity
 } from 'react-native'
 
 export default Box = props => (
-  <TouchableNativeFeedback
+  <TouchableOpacity
+    activeOpacity={.8}
+    style={props.style}
     onPress={props.onPress}
-    background={TouchableNativeFeedback.SelectableBackground()}
   >
-    <View style={props.style}>
-      <Image
-        style={props.imageStyle}
-        source={props.image}
-      />
-      <Text style={styles.text}>{props.text}</Text>
-    </View>
-  </TouchableNativeFeedback>
+    <Image
+      style={props.imageStyle}
+      source={props.image}
+    />
+    <Text style={styles.text}>{props.text}</Text>
+  </TouchableOpacity>
 )
 
 const styles = StyleSheet.create({

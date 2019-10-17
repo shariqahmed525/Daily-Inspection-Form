@@ -3,11 +3,13 @@ import {
   View,
   Text,
   Image,
+  Platform,
   TextInput,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
+  KeyboardAvoidingView
 } from 'react-native'
 import { useNavigation } from 'react-navigation-hooks';
 import SplashScreen from 'react-native-splash-screen'
@@ -120,61 +122,65 @@ export default Login = () => {
 
   return (
     isLoading && (
-      <ScrollView
-        keyboardShouldPersistTaps="handled"
-        contentContainerStyle={styles.container}
-      >
-        <Image
-          style={styles.logo}
-          resizeMode="contain"
-          source={require('../../assets/logo.png')}
-        />
-        <Input
-          value={email}
-          error={emailError}
-          placeholder="Email"
-          textContentType="emailAddress"
-          onChangeText={(e) => {
-            setEmail(e);
-            setEmailError("");
-          }}
-          inputIcon={require('../../assets/email.png')}
-        />
-        <Input
-          value={password}
-          error={passwordError}
-          placeholder="Password"
-          textContentType="password"
-          secureTextEntry={showPassword}
-          onChangeText={(e) => {
-            setPassword(e);
-            setPasswordError("");
-          }}
-          onShowPasswordPress={() => setShowPassword(!showPassword)}
-          inputIcon={require('../../assets/locked.png')}
-          rightIcon={
-            showPassword ?
-              require('../../assets/eye.png') :
-              require('../../assets/visibility.png')
-          }
-        />
-        <TouchableOpacity
-          activeOpacity={.8}
-          style={styles.forgotPasswordWrapper}
+      <KeyboardAvoidingView behavior={Platform.OS === "ios" && "padding"} style={{ flex: 1 }}>
+        <ScrollView
+          bounces={false}
+          scrollEnabled={Platform.OS === "ios" && false}
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={styles.container}
         >
-          <Text style={styles.forgotPassword}>Forgot Password?</Text>
-        </TouchableOpacity>
+          <Image
+            style={styles.logo}
+            resizeMode="contain"
+            source={require('../../assets/logo.png')}
+          />
+          <Input
+            value={email}
+            error={emailError}
+            placeholder="Email"
+            textContentType="emailAddress"
+            onChangeText={(e) => {
+              setEmail(e);
+              setEmailError("");
+            }}
+            inputIcon={require('../../assets/email.png')}
+          />
+          <Input
+            value={password}
+            error={passwordError}
+            placeholder="Password"
+            textContentType="password"
+            secureTextEntry={showPassword}
+            onChangeText={(e) => {
+              setPassword(e);
+              setPasswordError("");
+            }}
+            onShowPasswordPress={() => setShowPassword(!showPassword)}
+            inputIcon={require('../../assets/locked.png')}
+            rightIcon={
+              showPassword ?
+                require('../../assets/eye.png') :
+                require('../../assets/visibility.png')
+            }
+          />
+          <TouchableOpacity
+            activeOpacity={.8}
+            style={styles.forgotPasswordWrapper}
+          >
+            <Text style={styles.forgotPassword}>Forgot Password?</Text>
+          </TouchableOpacity>
 
-        {loader ?
-          <View>
-            <ActivityIndicator size="large" color={GreenColor} />
-          </View>
-          :
-          <Button
-            text="Login"
-            onPress={validate}
-          />}
-      </ScrollView>
+          {loader ?
+            <View>
+              <ActivityIndicator size="large" color={GreenColor} />
+            </View>
+            :
+            <Button
+              text="Login"
+              onPress={validate}
+            />}
+        </ScrollView>
+      </KeyboardAvoidingView>
     )
   )
 }

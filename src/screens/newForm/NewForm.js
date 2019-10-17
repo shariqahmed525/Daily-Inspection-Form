@@ -25,13 +25,13 @@ import RadioButtons from '../../components/RadioButtons';
 import FieldsHeading from '../../components/FieldsHeading';
 
 import {
-  CLEANING_TYPES,
-  INSPECTION_TYPES,
-  DEFECT_FOUND_DURING_INSPECTIONS,
-  OPERATIONS_AFFECTED,
-  CATEGORIES,
   FIRESTORE,
-  FIREBASE_STORAGE
+  CATEGORIES,
+  CLEANING_TYPES,
+  FIREBASE_STORAGE,
+  INSPECTION_TYPES,
+  OPERATIONS_AFFECTED,
+  DEFECT_FOUND_DURING_INSPECTIONS,
 } from '../../constants/constant';
 import {
   RedColor,
@@ -642,8 +642,10 @@ export default NewForm = () => {
         behavior={Platform.OS === "ios" ? "padding" : null}
       >
         <ScrollView
+          bounces={false}
           ref={ref => scrollRef = ref}
           keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.container}
         >
           <View>

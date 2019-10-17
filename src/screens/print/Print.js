@@ -299,6 +299,19 @@ export default printHTML = async (data) => {
     operationsAffected,
     locationInspectedDesc,
   } = data;
+  // console.log(data);
+  const html = `<div style="border:2px solid black; height:98%; padding:10px;">
+                  <div style="border:2px solid black; height:99.5%;">
+                  ${header(siteInspected, unit, date, time)}
+                    ${firstSection(inspectorName, inspectionTypes)}
+                    ${fieldHeadings("Brief Description of Location Inspected:")}
+                    ${secondSection(cleanType, locationInspectedDesc)}
+                    ${fieldHeadings("General Observation and Comments:")}
+                    ${thirdSection(comments, photoUrl)}
+                    ${fieldHeadings("Defect Record:")}
+                    ${fourthSection(defectFound, operationsAffected, category, defectDescription, date, reference)}
+                  </div>
+                </div>`;
 
   await RNPrint.print({
     // A4 or Letter
@@ -323,20 +336,7 @@ export default printHTML = async (data) => {
     // `,
 
     // PRC 10
-    html: `
-        <div style="border:2px solid black; height:98%; padding:10px;">
-          <div style="border:2px solid black; height:99.5%;">
-           ${header(siteInspected, unit, date, time)}
-             ${firstSection(inspectorName, inspectionTypes)}
-             ${fieldHeadings("Brief Description of Location Inspected:")}
-             ${secondSection(cleanType, locationInspectedDesc)}
-             ${fieldHeadings("General Observation and Comments:")}
-             ${thirdSection(comments, photoUrl)}
-             ${fieldHeadings("Defect Record:")}
-             ${fourthSection(defectFound, operationsAffected, category, defectDescription, date, reference)}
-          </div>
-        </div>
-      `,
+    html
   })
-  store.dispatch({ type: "STOP_LOADING" })
+  store.dispatch({ type: "STOP_LOADING" });
 }

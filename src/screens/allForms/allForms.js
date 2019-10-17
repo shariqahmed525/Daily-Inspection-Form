@@ -94,6 +94,7 @@ export default AllForms = () => {
         (allForms !== undefined && allForms !== null) ? allForms.length > 0 ? (
           <>
             <SwipeListView
+              bounces={false}
               stopLeftSwipe={width / 2}
               stopRightSwipe={-(width / 2)}
               data={allForms}

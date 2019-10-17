@@ -326,7 +326,7 @@ export default EditForm = () => {
     const filterCategory = category === "Other" ? otherCategory : category;
 
     try {
-      await FIRESTORE.collection('allforms').doc(uid).collection('form').doc(itemId).set({
+      await FIRESTORE.collection('allforms').doc(uid).collection('form').doc(itemId).update({
         unit,
         date,
         comments,
@@ -687,8 +687,10 @@ export default EditForm = () => {
           behavior={Platform.OS === "ios" ? "padding" : null}
         >
           <ScrollView
+            bounces={false}
             ref={ref => scrollRef = ref}
             keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.container}
           >
             <View>
