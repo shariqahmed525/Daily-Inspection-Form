@@ -1,3 +1,4 @@
+import { Platform } from 'react-native';
 import RNPrint from 'react-native-print';
 import { CATEGORIES, INSPECTION_TYPES } from '../../constants/constant';
 
@@ -34,7 +35,7 @@ const header = (siteInspected, unit, date, time) => {
                       </tr>
                       <tr>
                         <td style="${tdPadding} ${borderTop}">Time</td>
-                        <td style="${tdPadding} ${borderLeft} ${borderTop}">${time.split(",")[1].trim()}</td>
+                        <td style="${tdPadding} ${borderLeft} ${borderTop}">${time}</td>
                       </tr>
                     </table>
                   </td>
@@ -299,8 +300,31 @@ export default printHTML = async (data) => {
     operationsAffected,
     locationInspectedDesc,
   } = data;
-  // console.log(data);
-  const html = `<div style="border:2px solid black; height:98%; padding:10px;">
+
+  // A4 or Letter
+  const htmlIOS = `
+    <div style="border:2px solid black; height:98%; padding:10px;">
+      <div style="border:2px solid black; height:99.5%;">
+        ${header(siteInspected, unit, date, time)}
+        ${firstSection(inspectorName, inspectionTypes)}
+        ${fieldHeadings("Brief Description of Location Inspected:")}
+        ${secondSection(cleanType, locationInspectedDesc)}
+        ${fieldHeadings("General Observation and Comments:")}
+        ${thirdSection(comments, photoUrl)}
+      </div>
+    </div>
+    <div style="border:2px solid black; height:100%; padding:10px;">
+      <div style="border:2px solid black; height:99.5%;">
+        <div style="margin-top:20px" />
+          ${fieldHeadings("Defect Record:")}
+          ${fourthSection(defectFound, operationsAffected, category, defectDescription, date, reference)}
+        </div>
+      </div>
+    </div>`;
+
+
+  // PRC 10
+  const htmlAndroid = `<div style="border:2px solid black; height:98%; padding:10px;">
                   <div style="border:2px solid black; height:99.5%;">
                   ${header(siteInspected, unit, date, time)}
                     ${firstSection(inspectorName, inspectionTypes)}
@@ -313,30 +337,10 @@ export default printHTML = async (data) => {
                   </div>
                 </div>`;
 
-  await RNPrint.print({
-    // A4 or Letter
-    // html: `
-    //   <div style="border:2px solid black; height:98%; padding:10px;">
-    //     <div style="border:2px solid black; height:99.5%;">
-    //       ${header(siteInspected, unit, date, time)}
-    //       ${firstSection(inspectorName, inspectionTypes)}
-    //       ${fieldHeadings("Brief Description of Location Inspected:")}
-    //       ${secondSection(cleanType, locationInspectedDesc)}
-    //       ${fieldHeadings("General Observation and Comments:")}
-    //       ${thirdSection(comments, photoUrl)}
-    //     </div>
-    //   </div>
-    //   <div style="border:2px solid black; height:98%; padding:10px; margin-top:20px">
-    //     <div style="border:2px solid black;  height:99.5%;">
-    //     <div style="margin-top:20px" />
-    //     ${fieldHeadings("Defect Record:")}
-    //     ${fourthSection(defectFound, operationsAffected, category, defectDescription, date, reference)}
-    //     </div>
-    //   </div>
-    // `,
 
-    // PRC 10
-    html
+
+  await RNPrint.print({
+    html: Platform.OS === "ios" ? htmlIOS : htmlAndroid,
   })
   store.dispatch({ type: "STOP_LOADING" });
 }

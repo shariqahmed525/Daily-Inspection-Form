@@ -302,7 +302,7 @@ export default NewForm = () => {
         defectDescription,
         operationsAffected,
         category: filterCategory,
-        time: new Date().toLocaleString(),
+        time: moment().format("hh:mm"),
         inspectionTypes: filterInspectionTypes,
         locationInspectedDesc: descOfLocationInspected,
         timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
