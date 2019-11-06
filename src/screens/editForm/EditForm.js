@@ -345,7 +345,7 @@ export default EditForm = () => {
       });
 
       setLoader(false);
-      navigate('AllForms');
+      navigate('Forms');
 
       /* clean all fields */
 

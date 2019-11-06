@@ -309,7 +309,7 @@ export default NewForm = () => {
       });
 
       setLoader(false);
-      navigate('AllForms');
+      navigate('Forms');
 
       /* clean all fields */
 

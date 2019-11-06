@@ -27,7 +27,7 @@ export default Home = () => {
         <Box
           text="ALL FORMS"
           imageStyle={styles.image}
-          onPress={() => navigate('AllForms')}
+          onPress={() => navigate('Forms')}
           style={styles.firstSubContainer}
           image={require('../../assets/all-forms.png')}
         />
